@@ -1,92 +1,143 @@
-// assets/js/index.js
-
 import { AuthService } from './authService.js';
 import { Utils } from './utils.js';
+import { supabase } from './config.js';
+
+let labeledDescriptors = [];
+let faceMatcher = null;
+let videoStream = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const enableCameraButton = document.getElementById('enableCameraButton');
-    
-    // 1. Check if the user is already logged in
+    // 1. ログイン済みならリダイレクト
     if (AuthService.getCurrentUser()) {
-        Utils.showMessage('Session active. Redirecting to dashboard...', 'success', 'loginMessages');
-        setTimeout(() => {
-            window.location.href = 'pages/main-menu.html';
-        }, 1000);
+        window.location.href = 'pages/main-menu.html';
         return;
     }
 
-    // 2. Attach Camera Handler
-    if (enableCameraButton) {
-        enableCameraButton.addEventListener('click', initCamera);
+    // 2. AIモデルのロード開始
+    try {
+        await Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('./assets/models'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('./assets/models'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('./assets/models')
+        ]);
+        
+        // DBから全ユーザーの顔データを取得してマッチャーを準備
+        await loadLabeledImages();
+        
+        document.getElementById('loadingModels').style.display = 'none';
+        document.getElementById('cameraPermissions').style.display = 'block';
+        
+        document.getElementById('enableCameraButton').addEventListener('click', startCamera);
+    } catch (error) {
+        console.error("Error loading models:", error);
+        Utils.showMessage('Failed to load AI models. Check console.', 'error', 'loginMessages');
     }
 });
 
-/**
- * Initializes the camera stream for biometric login.
- */
-function initCamera() {
-    const video = document.getElementById('videoElement');
-    const cameraPermissions = document.getElementById('cameraPermissions');
-    const cameraContainer = document.getElementById('cameraContainer');
-    const statusIndicator = document.getElementById('statusIndicator');
+async function loadLabeledImages() {
+    // DBから顔データを持つユーザーのみ取得
+    const { data: users, error } = await supabase
+        .from('users')
+        .select('email, face_descriptor')
+        .not('face_descriptor', 'is', null);
 
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-                cameraPermissions.style.display = 'none';
-                cameraContainer.style.display = 'block';
-                statusIndicator.textContent = 'Camera active. Centering face...';
+    if (error || !users) return;
 
-                // Once the video stream is loaded, you'd start your Face Recognition logic here
-                video.addEventListener('loadeddata', () => {
-                    simulateFaceRecognition(video);
-                });
-            })
-            .catch(error => {
-                console.error('Camera access denied:', error);
-                cameraPermissions.innerHTML = `
-                    <div class="permission-icon error-message"><i class="fas fa-exclamation-triangle"></i></div>
-                    <h3>Camera Access Denied</h3>
-                    <p>Access was blocked. You can still use the manual login option.</p>
-                `;
-            });
-    } else {
-        Utils.showMessage('Biometric login is not supported on this device.', 'error', 'loginMessages');
+    labeledDescriptors = users.map(user => {
+        // JSON配列をFloat32Arrayに変換
+        const descriptor = new Float32Array(Object.values(user.face_descriptor));
+        return new faceapi.LabeledFaceDescriptors(user.email, [descriptor]);
+    });
+
+    if (labeledDescriptors.length > 0) {
+        faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6); // 閾値 0.6
     }
 }
 
-/**
- * Placeholder for actual Face Recognition logic.
- * @param {HTMLVideoElement} videoElement 
- */
-function simulateFaceRecognition(videoElement) {
+async function startCamera() {
+    const video = document.getElementById('videoElement');
+    const container = document.getElementById('cameraContainer');
     const statusIndicator = document.getElementById('statusIndicator');
-    
-    // Simulate biometric match after a delay
-    setTimeout(() => {
-        statusIndicator.textContent = '🟢 Face Recognized! Logging in...';
-        statusIndicator.classList.remove('ready');
-        statusIndicator.classList.add('success');
-        
-        // --- START Biometric Login Success Simulation ---
-        // In a real app, this is where you would call AuthService.login after a match
-        const SIMULATED_EMAIL = 'user@company.com'; 
-        const SIMULATED_PASSWORD = 'user123';
-        
-        AuthService.login(SIMULATED_EMAIL, SIMULATED_PASSWORD)
-            .then(() => {
-                setTimeout(() => {
-                    window.location.href = 'pages/main-menu.html';
-                }, 1000);
-            })
-            .catch(error => {
-                // Biometric match but Auth fails (e.g., account blocked)
-                Utils.showMessage('Access Denied. Account is locked.', 'error', 'loginMessages');
-                statusIndicator.textContent = '❌ Access Denied.';
-                window.location.href = 'pages/error-screen.html'; 
-            });
-        // --- END Simulation ---
 
-    }, 3000); // 3-second delay to simulate scanning
+    try {
+        // モバイル対応: 背面カメラではなく前面カメラ(user)を優先
+        videoStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } 
+        });
+        
+        video.srcObject = videoStream;
+        document.getElementById('cameraPermissions').style.display = 'none';
+        container.style.display = 'block';
+
+        // 映像再生開始イベントで認識ループを開始
+        video.addEventListener('play', () => {
+            const canvas = document.getElementById('overlayCanvas');
+            const displaySize = { width: video.clientWidth, height: video.clientHeight };
+            faceapi.matchDimensions(canvas, displaySize);
+
+            setInterval(async () => {
+                // 顔検出
+                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                    .withFaceLandmarks()
+                    .withFaceDescriptors();
+
+                const resizedDetections = faceapi.resizeResults(detections, displaySize);
+                
+                // キャンバスをクリアして描画
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (!faceMatcher) {
+                    statusIndicator.textContent = "No registered faces in DB.";
+                    return;
+                }
+
+                if (resizedDetections.length > 0) {
+                    const result = faceMatcher.findBestMatch(resizedDetections[0].descriptor);
+                    
+                    if (result.label !== 'unknown') {
+                        // 認証成功！
+                        statusIndicator.textContent = `Verified: ${result.label}`;
+                        statusIndicator.style.color = 'var(--success)';
+                        faceapi.draw.drawDetections(canvas, resizedDetections);
+                        
+                        // ログイン処理へ (パスワードレスログインとして扱うため、サーバー側で特別な処理が必要だが
+                        // ここでは簡易的にAuthServiceでユーザー情報を取得してログインとする)
+                        performBiometricLogin(result.label);
+                    } else {
+                        statusIndicator.textContent = "Face not recognized";
+                        statusIndicator.style.color = 'var(--danger)';
+                        faceapi.draw.drawDetections(canvas, resizedDetections);
+                    }
+                } else {
+                    statusIndicator.textContent = "Scanning...";
+                    statusIndicator.style.color = 'white';
+                }
+            }, 200); // 200msごとに判定
+        });
+
+    } catch (err) {
+        console.error(err);
+        Utils.showMessage('Camera access denied or not supported.', 'error', 'loginMessages');
+    }
+}
+
+async function performBiometricLogin(email) {
+    // カメラを停止
+    if(videoStream) videoStream.getTracks().forEach(track => track.stop());
+    
+    // ユーザー情報を取得してセッション保存 (パスワードなしでログイン)
+    const { data: user } = await supabase.from('users').select('*').eq('email', email).single();
+    
+    if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('isAuthenticated', 'true');
+        
+        // ログ記録
+        await supabase.from('access_history').insert({
+            user_id: user.id, access_type: 'biometric_login', status: 'success',
+            device_info: navigator.userAgent, location: 'Face Login'
+        });
+
+        window.location.href = 'pages/main-menu.html';
+    }
 }

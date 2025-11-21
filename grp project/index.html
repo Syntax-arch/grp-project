@@ -2,62 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Secure Access System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Access System v3.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="app">
             <div class="header">
-                <h1>Secure Access System</h1>
-                <p>Biometric Authentication & Access Control</p>
+                <h1>Secure Access</h1>
+                <p>Biometric Login v3.0</p>
             </div>
             
             <div class="content">
-                <h2 class="screen-title">Login</h2>
-                
                 <div id="loginMessages"></div>
                 
-                <div class="camera-permissions" id="cameraPermissions">
-                    <div class="permission-icon">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <h3>Camera Access Required</h3>
-                    <p>To use face recognition, please allow camera access when prompted.</p>
-                    <button class="btn btn-primary" id="enableCameraButton">
-                        <i class="fas fa-camera"></i> Enable Camera
-                    </button>
-                </div>
-                
-                <div class="camera-container" id="cameraContainer" style="display: none;">
-                    <video id="videoElement" autoplay playsinline></video>
-                    <div class="face-outline"></div>
-                    <div class="status-indicator" id="statusIndicator">Ready to scan...</div>
+                <div id="loadingModels" style="text-align:center; margin:20px;">
+                    <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i>
+                    <p>Loading AI...</p>
                 </div>
 
-                <div class="options" style="margin-top: 20px;">
-                    <a href="pages/manual-login.html" class="btn btn-secondary btn-block">
-                        <i class="fas fa-key"></i> Use Manual Login
+                <div class="camera-container" id="cameraContainer" style="display:none;">
+                    <video id="videoElement" autoplay muted playsinline></video>
+                    <canvas id="overlayCanvas"></canvas>
+                </div>
+                <div id="statusIndicator" style="text-align:center; font-weight:bold; margin-bottom:15px;"></div>
+
+                <button id="enableCameraButton" class="btn btn-primary" style="display:none;">
+                    <i class="fas fa-camera"></i> Start Face Login
+                </button>
+
+                <div class="options">
+                    <a href="pages/manual-login.html" class="btn btn-secondary">
+                        <i class="fas fa-key"></i> Password Login
                     </a>
-                </div>
-
-                <div class="options" style="margin-top: 15px;">
-                    <a href="pages/registration.html" class="btn btn-success btn-block">
-                        <i class="fas fa-user-plus"></i> Register New Account
+                    <a href="pages/registration.html" class="btn" style="color:var(--primary); background:none; margin-top:10px;">
+                        Create New Account
                     </a>
                 </div>
             </div>
             
             <div class="footer">
-                <p>Secure Access System v2.1 &copy; 2023 | All rights reserved</p>
+                <p>Secure Access System v3.0</p>
             </div>
         </div>
     </div>
 
-    <script type="module" src="assets/js/utils.js"></script>
-    <script type="module" src="assets/js/authService.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module" src="assets/js/config.js"></script>
     <script type="module" src="assets/js/index.js"></script>
 </body>
 </html>

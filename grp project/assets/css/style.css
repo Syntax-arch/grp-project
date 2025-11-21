@@ -598,3 +598,280 @@ input:checked + .slider:before {
         gap: 12px;
     }
 }
+
+/* assets/css/style.css */
+:root {
+    --primary: #4361ee;
+    --secondary: #3a0ca3;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --gray: #6c757d;
+    --border: #e9ecef;
+}
+
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container { width: 100%; max-width: 500px; margin: 0 auto; } /* Optimize width for mobile */
+
+.app {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    overflow: hidden;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header { background: var(--primary); padding: 30px 20px; text-align: center; color: white; }
+.content { padding: 30px 20px; flex: 1; }
+.footer { text-align: center; padding: 20px; color: var(--gray); border-top: 1px solid var(--border); font-size: 0.8rem; }
+
+/* Buttons */
+.btn {
+    display: inline-block; width: 100%; padding: 12px; border: none; border-radius: 10px;
+    font-size: 1rem; cursor: pointer; transition: 0.3s; text-decoration: none; text-align: center;
+    margin-bottom: 10px; color: white;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--primary); }
+.btn-secondary { background: var(--secondary); }
+.btn-danger { background: var(--danger); }
+.btn-success { background: var(--success); } /* Added missing class */
+
+/* Face Login specific */
+.camera-container {
+    position: relative;
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #000;
+    margin-bottom: 15px;
+}
+video { width: 100%; height: auto; display: block; }
+canvas { position: absolute; top: 0; left: 0; }
+
+/* Admin Modal Styles */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+}
+.modal-card {
+    background: white;
+    width: 90%; max-width: 600px; max-height: 85vh;
+    border-radius: 15px; padding: 20px;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.close-modal {
+    position: absolute; top: 15px; right: 15px;
+    background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray);
+}
+
+/* Utilities */
+.error-message { background: #ffebee; color: #c62828; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+.success-message { background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; color: white; }
+.badge.success { background: var(--success); }
+.badge.danger { background: var(--danger); }
+
+/* Tables */
+.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.data-table th { text-align: left; padding: 8px; background: var(--light); }
+.data-table td { padding: 8px; border-bottom: 1px solid var(--border); }
+
+/* ... Keep existing styles from previous turns, append these below ... */
+
+/* --- Dashboard Specific Styles --- */
+
+/* Header Redesign */
+.dashboard-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 25px 20px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+    margin: -20px -20px 20px -20px; /* Negative margin to stretch full width inside .app */
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border: 2px solid rgba(255,255,255,0.5);
+    backdrop-filter: blur(5px);
+}
+
+.user-text .greeting { font-size: 0.8rem; opacity: 0.9; margin-bottom: 0; }
+.user-text h2 { font-size: 1.2rem; margin: 0; font-weight: 600; }
+
+.role-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: rgba(0,0,0,0.2); }
+.role-badge.admin { background: #ff9f43; color: #fff; }
+.role-badge.user { background: #00d2d3; color: #fff; }
+
+.logout-icon-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.logout-icon-btn:hover { background: rgba(255,255,255,0.4); }
+
+/* Stats Cards Row */
+.stats-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    flex: 1;
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.stat-card:active { transform: scale(0.97); }
+.stat-card.secure .stat-icon { background: rgba(76, 201, 240, 0.15); color: var(--success); }
+.stat-card.info .stat-icon { background: rgba(67, 97, 238, 0.15); color: var(--primary); }
+
+.stat-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+}
+.stat-details h3 { font-size: 0.85rem; color: var(--gray); margin-bottom: 2px; }
+.stat-details p { font-size: 0.9rem; font-weight: bold; color: var(--dark); }
+
+/* Menu Grid */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.menu-card {
+    background: white;
+    border: 1px solid #f0f0f0;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--dark);
+    transition: 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.menu-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+
+.menu-icon {
+    width: 50px; height: 50px;
+    background: var(--light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary);
+    font-size: 1.5rem;
+    transition: 0.3s;
+}
+.menu-card:hover .menu-icon { background: var(--primary); color: white; }
+
+.admin-card .menu-icon { color: var(--danger); background: rgba(247, 37, 133, 0.1); }
+.admin-card:hover .menu-icon { background: var(--danger); color: white; }
+
+/* Recent Activity List */
+.recent-activity-list {
+    background: #fbfbfb;
+    border-radius: 15px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.activity-row {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    gap: 15px;
+}
+.activity-row:last-child { border-bottom: none; }
+
+.act-icon {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    color: white;
+}
+.act-icon.success { background: var(--success); }
+.act-icon.failed { background: var(--danger); }
+
+.act-details { flex: 1; }
+.act-title { font-size: 0.9rem; font-weight: 600; color: var(--dark); }
+.act-time { font-size: 0.75rem; color: var(--gray); }
+
+/* Section Title */
+.section-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 600px) {
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr); /* Keep 2 columns on mobile for a grid feel */
+    }
+}

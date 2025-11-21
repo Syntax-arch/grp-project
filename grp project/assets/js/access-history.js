@@ -1,5 +1,3 @@
-// assets/js/access-history.js
-
 import { AuthService } from './authService.js';
 import { Utils } from './utils.js';
 import { supabase } from './config.js';
@@ -7,65 +5,65 @@ import { supabase } from './config.js';
 document.addEventListener('DOMContentLoaded', () => {
     AuthService.checkSession();
     loadHistory();
-    // Attach event listeners for filter changes
-    document.getElementById('filterType').addEventListener('change', loadHistory);
-    document.getElementById('filterStatus').addEventListener('change', loadHistory);
 });
 
 async function loadHistory() {
     const user = AuthService.getCurrentUser();
-    const historyList = document.getElementById('historyList');
-    
-    if (!user) {
-        historyList.innerHTML = '<div style="text-align: center; padding: 20px;">User not found.</div>';
+    const container = document.getElementById('historyList');
+    container.innerHTML = '<p style="text-align:center">Loading...</p>';
+
+    const { data: history, error } = await supabase
+        .from('access_history')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+    if (error || !history.length) {
+        container.innerHTML = '<p style="text-align:center;color:gray">No history found.</p>';
         return;
     }
-    
-    historyList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--gray);"><i class="fas fa-spinner fa-spin"></i> Loading history...</div>';
 
-    const filterType = document.getElementById('filterType').value;
-    const filterStatus = document.getElementById('filterStatus').value;
-
-    let query = supabase
-        .from('access_history')
-        .select('created_at, status, access_type, device_info, message')
-        .eq('user_id', user.id);
-        
-    if (filterType !== 'all') {
-        query = query.eq('access_type', filterType);
-    }
-    if (filterStatus !== 'all') {
-        query = query.eq('status', filterStatus);
-    }
-
-    try {
-        const { data: history, error } = await query.order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const historyHtml = history.map(h => `
-            <div class="activity-item ${h.status}">
-                <div class="activity-icon">
-                    <i class="fas fa-${h.status === 'success' ? 'check' : 'times'}-circle"></i>
-                </div>
-                <div class="activity-info">
-                    <div class="activity-title">${h.access_type.replace('_', ' ').toUpperCase()} - ${h.status.toUpperCase()}</div>
-                    <div class="activity-desc">${Utils.getIconForDevice(h.device_info)} - ${h.message || 'N/A'}</div>
-                </div>
-                <div class="activity-time">${Utils.formatDate(h.created_at)}</div>
+    container.innerHTML = history.map(h => `
+        <div style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid #eee; align-items:center;">
+            <div>
+                <div style="font-weight:bold; color: var(--dark)">${h.access_type.toUpperCase()}</div>
+                <div style="font-size:0.85rem; color:var(--gray)">${Utils.getIconForDevice(h.device_info)}</div>
             </div>
-        `).join('');
-
-        historyList.innerHTML = historyHtml || '<div style="text-align: center; padding: 20px; color: var(--gray);">No history found with these filters.</div>';
-
-    } catch (error) {
-        console.error('Error loading history:', error);
-        Utils.showMessage('Failed to load history. Please check console.', 'error');
-        historyList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger);">Error loading history.</div>';
-    }
+            <div style="text-align:right;">
+                <span class="badge ${h.status === 'success' ? 'success' : 'danger'}">${h.status}</span>
+                <div style="font-size:0.75rem; margin-top:5px;">${Utils.formatDate(h.created_at)}</div>
+            </div>
+        </div>
+    `).join('');
 }
 
-window.loadHistory = loadHistory; // Expose to global scope for button onclick
-window.exportHistory = () => { 
-    Utils.showMessage('Export feature coming soon!', 'success', 'message');
+// Export Functionality
+window.exportHistory = async () => {
+    const user = AuthService.getCurrentUser();
+    const { data: history } = await supabase.from('access_history').select('*').eq('user_id', user.id);
+    
+    if (!history || history.length === 0) {
+        alert("No data to export.");
+        return;
+    }
+
+    // Create CSV content
+    const headers = ['Date', 'Type', 'Status', 'Device'];
+    const rows = history.map(h => [h.created_at, h.access_type, h.status, h.device_info]);
+    
+    let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+    rows.forEach(row => {
+        csvContent += row.join(",") + "\n";
+    });
+
+    // Trigger Download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "access_history.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 };
+window.loadHistory = loadHistory;

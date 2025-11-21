@@ -1,71 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Menu - Secure Access System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard - Secure Access System v3.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- Load Face API for the Quick Verify feature -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="app">
-            <div class="header">
-                <h1>Secure Access System</h1>
-                <p>Welcome, <span id="userNameDisplay">User</span>!</p>
+        <div class="app dashboard-mode">
+            <!-- Header Section -->
+            <div class="dashboard-header">
+                <div class="user-info">
+                    <div class="avatar-circle" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-text">
+                        <p class="greeting">Welcome back,</p>
+                        <h2 id="userNameDisplay">User</h2>
+                        <span class="role-badge" id="userRole">Loading...</span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="logout-icon-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
             
-            <div class="content">
-                <h2 class="screen-title">Main Menu</h2>
+            <div class="content dashboard-content">
                 
-                <!-- Display status messages -->
-                <div id="statusMessage" class="status-message"></div>
+                <!-- Status Cards Row -->
+                <div class="stats-row">
+                    <div class="stat-card secure">
+                        <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="stat-details">
+                            <h3>System Status</h3>
+                            <p>Secure & Active</p>
+                        </div>
+                    </div>
+                    <div class="stat-card info" onclick="triggerQuickVerify()">
+                        <div class="stat-icon"><i class="fas fa-camera"></i></div>
+                        <div class="stat-details">
+                            <h3>Quick Verify</h3>
+                            <p>Tap to check ID</p>
+                        </div>
+                    </div>
+                </div>
 
-                <div class="card menu-grid">
+                <!-- Main Navigation Grid -->
+                <div class="section-title">Menu</div>
+                <div class="menu-grid">
                     
-                    <!-- 1. Admin Panel Link (Only visible to admins) -->
-                    <a href="admin-panel.html" class="menu-item admin-only" id="adminPanelLink" style="display: none;">
-                        <i class="fas fa-user-shield fa-2x"></i>
-                        <p>Admin Panel</p>
+                    <!-- Admin Only Link -->
+                    <a href="admin-panel.html" class="menu-card admin-card" id="adminPanelLink" style="display: none;">
+                        <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
+                        <span>Admin Panel</span>
                     </a>
 
-                    <!-- 2. My Data Link -->
-                    <a href="my-data.html" class="menu-item">
-                        <i class="fas fa-database fa-2x"></i>
-                        <p>My Data</p>
+                    <a href="my-data.html" class="menu-card">
+                        <div class="menu-icon"><i class="fas fa-id-card"></i></div>
+                        <span>My Profile</span>
                     </a>
 
-                    <!-- 3. Access History Link -->
-                    <a href="access-history.html" class="menu-item">
-                        <i class="fas fa-history fa-2x"></i>
-                        <p>Access History</p>
+                    <a href="access-history.html" class="menu-card">
+                        <div class="menu-icon"><i class="fas fa-history"></i></div>
+                        <span>Access Logs</span>
                     </a>
 
-                    <!-- 4. Support Link -->
-                    <a href="support.html" class="menu-item">
-                        <i class="fas fa-life-ring fa-2x"></i>
-                        <p>Support & Help</p>
+                    <a href="settings.html" class="menu-card">
+                        <div class="menu-icon"><i class="fas fa-cog"></i></div>
+                        <span>Settings</span>
                     </a>
+
+                    <a href="support.html" class="menu-card">
+                        <div class="menu-icon"><i class="fas fa-headset"></i></div>
+                        <span>Support</span>
+                    </a>
+                    
+                    <!-- New Feature: Security Check -->
+                    <div class="menu-card action-card" onclick="triggerSecurityScan()">
+                        <div class="menu-icon"><i class="fas fa-radar"></i></div>
+                        <span>System Scan</span>
+                    </div>
                 </div>
 
-                <div class="options" style="margin-top: 20px;">
-                    <!-- Logout Button -->
-                    <button id="logoutBtn" class="btn btn-danger btn-block">
-                        <i class="fas fa-sign-out-alt"></i> Log Out
-                    </button>
+                <!-- Recent Activity Preview -->
+                <div class="section-title" style="margin-top: 25px;">Recent Activity</div>
+                <div id="recentActivityWidget" class="recent-activity-list">
+                    <div style="text-align:center; color:gray; padding:10px;">Loading activity...</div>
                 </div>
+
             </div>
             
-            <div class="footer">
-                <p>Secure Access System v2.1 &copy; 2023 | All rights reserved</p>
+            <!-- Verify Modal (Hidden by default) -->
+            <div id="verifyModal" class="modal-overlay" style="display:none;">
+                <div class="modal-card" style="text-align:center;">
+                    <button class="close-modal" onclick="closeVerifyModal()">&times;</button>
+                    <h3>Identity Verification</h3>
+                    <div class="camera-container" style="margin: 15px 0; height: 250px;">
+                        <video id="verifyVideo" autoplay muted playsinline style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></video>
+                        <canvas id="verifyCanvas" style="position:absolute; top:0; left:0;"></canvas>
+                    </div>
+                    <p id="verifyStatus" style="font-weight:bold; color:var(--primary);">Initializing Camera...</p>
+                </div>
             </div>
+
         </div>
     </div>
 
-    <!-- External and App Scripts -->
+    <!-- Scripts -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module" src="../assets/js/config.js"></script>
     <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/utils.js"></script>
     <script type="module" src="../assets/js/main-menu.js"></script>
