@@ -4,13 +4,14 @@ import { showMessage } from './utils.js';
 
 window.addEventListener('load', async () => {
     
-    // 1. Check DB Status - This is the check that was failing!
+    // 1. Database Status Check
     const statusDiv = document.getElementById('dbStatus');
     if (statusDiv) {
         statusDiv.style.display = 'block';
         statusDiv.innerHTML = '<i class="fas fa-network-wired fa-spin"></i> Checking System Status...';
         statusDiv.className = 'db-status connecting';
 
+        // This is where the long wait occurs if the key or RLS policy is wrong
         if (await checkDbConnection()) {
             statusDiv.textContent = 'Database Online';
             statusDiv.className = 'db-status online';
@@ -55,7 +56,7 @@ async function handleLogin() {
 
     loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
     loginBtn.disabled = true;
-    showMessage('', 'error', msgContainer); // Clear old messages
+    showMessage('', 'error', msgContainer); 
 
     try {
         const { user, error } = await AuthService.login(email, password);

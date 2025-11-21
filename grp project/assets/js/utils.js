@@ -21,4 +21,8 @@ export function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-// Add other utility functions here if needed
+export function isStrongPassword(password) {
+    // At least 8 characters, with uppercase, lowercase, number, and special character
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return strongRegex.test(password);
+}

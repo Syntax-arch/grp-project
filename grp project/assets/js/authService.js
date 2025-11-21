@@ -1,6 +1,6 @@
 // assets/js/authService.js
 
-// 🛑 WARNING: Using your latest provided key and URL
+// 🛑 THESE ARE YOUR NEW, CORRECT SUPABASE CREDENTIALS
 const SUPABASE_URL = 'https://jyskbnmmehahbtqvldsn.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5c2tibm1tZWhhaGJ0cXZsZHNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2Nzg3MDksImV4cCI6MjA3OTI1NDcwOX0.dLiIQD3gflP-yOYjJe1eeZc8Kqzg-h9NGRljCY-XtW0';
 
@@ -10,7 +10,7 @@ export const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // Function to check the database connection status
 export async function checkDbConnection() {
     try {
-        // Attempt a lightweight SELECT query that requires an RLS policy
+        // Lightweight query on the 'users' table to test the connection
         const { error } = await supabase
             .from('users') 
             .select('id', { count: 'exact', head: true });
@@ -22,11 +22,9 @@ export async function checkDbConnection() {
     }
 }
 
-// Service object containing core authentication logic
 export const AuthService = {
     async login(email, password) {
         try {
-            // Get user from database
             const { data: user, error } = await supabase
                 .from('users')
                 .select('*')
@@ -35,11 +33,9 @@ export const AuthService = {
                 .single();
 
             if (error) {
-                 // RLS or other database errors will land here
-                throw new Error(error.message || 'Authentication failed. Check RLS policy.');
+                throw new Error(error.message || 'Authentication failed. Check your RLS policy and database.');
             }
             if (!user) {
-                // No user found with that email
                  throw new Error('Invalid email or password.');
             }
 
@@ -48,14 +44,12 @@ export const AuthService = {
                 throw new Error('Invalid email or password.');
             }
 
-            // Store user session
             localStorage.setItem('currentUser', JSON.stringify(user));
             localStorage.setItem('isAuthenticated', 'true');
             
             return { user, error: null };
 
         } catch (error) {
-            console.error('Login error:', error);
             return { user: null, error: error.message };
         }
     },
@@ -72,7 +66,7 @@ export const AuthService = {
     logout() {
         localStorage.removeItem('currentUser');
         localStorage.removeItem('isAuthenticated');
-        // Assumes index.html is in the parent directory
+        // Redirect to index.html in the parent directory
         window.location.href = '../index.html'; 
     },
 
