@@ -1,32 +1,4 @@
-/* ---------------------------------------------------------------------- */
-/* 1. Global Reset, Variables, and A11y (Accessibility)                   */
-/* ---------------------------------------------------------------------- */
-:root {
-    /* Color Palette */
-    --primary: #4361ee;    /* Main Blue (Brand Color) */
-    --secondary: #3a0ca3;  /* Darker Blue/Purple (Accent) */
-    --success: #4cc9f0;    /* Light Blue (Biometric/Success) */
-    --danger: #f72585;     /* Pink/Red (Error/Delete) */
-    --warning: #f8961e;    /* Orange (Warning) */
-    --light: #f8f9fa;      /* Off-White (Card background) */
-    --dark: #212529;       /* Near-Black (Text) */
-    --gray: #6c757d;       /* Medium Gray (Helper Text) */
-    --border: #e9ecef;     /* Light Gray Border */
-    --app-background: #f4f6f9; /* Light app background */
-    --page-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    
-    /* Spacing & Typography */
-    --spacer: 1rem;
-    --font-size-sm: 0.875rem;
-    --font-size-lg: 1.1rem;
-
-    /* Shadows */
-    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    /* Multi-layered shadow for modern, lifted look */
-    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
+/* style.css */
 * {
     margin: 0;
     padding: 0;
@@ -34,151 +6,101 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ⚠️ A11y Improvement: Use focus-visible for better user experience */
-:focus {
-    outline: none;
+:root {
+    --primary: #4361ee;
+    --secondary: #3a0ca3;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --gray: #6c757d;
+    --border: #e9ecef;
 }
 
-:focus-visible {
-    outline: 3px solid var(--primary);
-    outline-offset: 2px;
-}
-
-/* Custom Scrollbar for a Polished Desktop Look */
-body::-webkit-scrollbar {
-    width: 8px;
-}
-body::-webkit-scrollbar-track {
-    background: var(--app-background);
-}
-body::-webkit-scrollbar-thumb {
-    background: var(--gray);
-    border-radius: 4px;
-}
-body::-webkit-scrollbar-thumb:hover {
-    background: var(--dark);
-}
-
-/* ---------------------------------------------------------------------- */
-/* 2. Global Layout & App Container                                       */
-/* ---------------------------------------------------------------------- */
 body {
-    background: var(--page-background);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    color: var(--dark);
 }
 
 .container {
     width: 100%;
-    max-width: 450px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
 .app {
     background: white;
     border-radius: 20px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    width: 100%;
-    min-height: 600px;
-    display: flex;
-    flex-direction: column;
+    max-width: 450px;
+    margin: 0 auto;
 }
 
-/* ---------------------------------------------------------------------- */
-/* 3. Header and Navigation                                               */
-/* ---------------------------------------------------------------------- */
 .header {
-    background-color: var(--primary);
-    color: var(--light);
-    padding: 30px 25px 20px 25px;
+    background: var(--primary);
+    color: white;
+    padding: 30px;
     text-align: center;
     position: relative;
-    /* ⚠️ Improvement: Visual separation from content */
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); 
-    z-index: 10;
 }
 
 .header h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     margin-bottom: 5px;
-    font-weight: 600;
 }
 
 .header p {
-    font-size: var(--font-size-sm);
-    opacity: 0.8;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .back-button {
     position: absolute;
-    left: 15px; /* Adjusted slightly */
+    left: 20px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--light);
-    font-size: var(--font-size-lg);
+    color: white;
+    font-size: 1.2rem;
     text-decoration: none;
-    padding: 10px;
-    line-height: 0;
-    border-radius: 50%;
-    transition: background-color 0.2s;
 }
 
-.back-button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* ---------------------------------------------------------------------- */
-/* 4. Content and Typography                                              */
-/* ---------------------------------------------------------------------- */
 .content {
-    padding: 30px 25px;
-    flex-grow: 1;
-    background-color: var(--app-background);
-    z-index: 1;
+    padding: 40px;
 }
 
 .screen-title {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     color: var(--dark);
     margin-bottom: 30px;
     text-align: center;
-    font-weight: 500;
-}
-
-.section-title {
-    font-size: 1.2rem;
     font-weight: 600;
-    color: var(--dark);
-    margin: 25px 0 15px 0;
-    border-left: 4px solid var(--primary);
-    padding-left: 10px;
 }
 
-/* ---------------------------------------------------------------------- */
-/* 5. Cards and Forms                                                     */
-/* ---------------------------------------------------------------------- */
+/* --- Forms & Buttons --- */
 .card {
-    background-color: white;
-    padding: 20px;
+    background: var(--light);
     border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border);
+    padding: 25px;
     margin-bottom: 20px;
+    border: 1px solid var(--border);
 }
 
 .card-title {
-    font-size: var(--font-size-lg);
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--primary);
     margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    text-align: center;
+}
+
+.card-title i {
+    margin-right: 8px;
 }
 
 .form-group {
@@ -187,9 +109,9 @@ body {
 
 .form-group label {
     display: block;
-    font-size: var(--font-size-sm);
-    color: var(--gray);
-    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--dark);
+    margin-bottom: 5px;
     font-weight: 500;
 }
 
@@ -199,55 +121,28 @@ body {
     border: 1px solid var(--border);
     border-radius: 8px;
     font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    background-color: var(--light);
+    transition: border-color 0.3s;
 }
 
 .form-control:focus {
     border-color: var(--primary);
     outline: none;
-    background-color: white;
     box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
 }
 
-/* ⚠️ Improvement: Input Validation Error State */
-.form-control:invalid:not(:placeholder-shown) {
-    border-color: var(--danger);
-    box-shadow: 0 0 0 3px rgba(247, 37, 133, 0.2);
-}
-
-/* ---------------------------------------------------------------------- */
-/* 6. Buttons and Links                                                   */
-/* ---------------------------------------------------------------------- */
 .btn {
-    padding: 12px 20px;
+    display: block;
+    width: 100%;
+    padding: 12px;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
     font-size: 1rem;
-    font-weight: 600;
+    cursor: pointer;
     text-align: center;
     text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background-color 0.2s, transform 0.1s, opacity 0.2s;
-    user-select: none;
-}
-
-.btn:active {
-    transform: scale(0.98);
-}
-
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.btn-block {
-    display: flex;
-    width: 100%;
+    transition: background-color 0.3s, transform 0.1s;
+    font-weight: 600;
+    margin-top: 15px;
 }
 
 .btn-primary {
@@ -256,7 +151,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #3b50cb;
+    background-color: var(--secondary);
 }
 
 .btn-secondary {
@@ -265,357 +160,267 @@ body {
 }
 
 .btn-secondary:hover {
-    background-color: #5a6268;
+    background-color: var(--dark);
 }
 
-.btn-success {
-    background-color: var(--success);
-    color: var(--dark);
+.text-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
 }
 
-.btn-success:hover {
-    background-color: #38b1d9;
+/* --- Camera/Biometric Specific --- */
+.camera-permissions {
+    text-align: center;
+    padding: 30px 20px;
+    border: 2px dashed var(--primary);
+    border-radius: 12px;
+    margin-bottom: 30px;
 }
 
-.btn-danger {
-    background-color: var(--danger);
+.permission-icon {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.camera-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#videoElement {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    border: 5px solid var(--primary);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#statusIndicator {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background: var(--light);
+    color: var(--gray);
+    font-weight: 500;
+}
+
+#statusIndicator.success {
+    background: var(--success);
     color: white;
 }
 
-.btn-danger:hover {
-    background-color: #d91c71;
+#statusIndicator.error {
+    background: var(--danger);
+    color: white;
 }
 
-.btn-sm {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-}
-
-/* ---------------------------------------------------------------------- */
-/* 7. Messages and Alerts                                                 */
-/* ---------------------------------------------------------------------- */
-.error-message, .success-message {
-    padding: 15px;
+/* --- Messages --- */
+.error-message, .success-message, .info-message {
+    padding: 12px;
     border-radius: 8px;
     margin-bottom: 20px;
     font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-left: 5px solid;
 }
 
 .error-message {
-    background-color: #fce4ec; /* Light Pink */
+    background-color: #fce4ec; /* light pink */
     color: var(--danger);
-    border-color: var(--danger);
+    border: 1px solid #f8bbd0;
 }
 
 .success-message {
-    background-color: #e3f2fd; /* Light Blue */
-    color: var(--primary);
-    border-color: var(--primary);
+    background-color: #e0f7fa; /* light cyan */
+    color: #00bcd4; /* dark cyan */
+    border: 1px solid #b2ebf2;
 }
 
-/* ⚠️ Improvement: DB Status Indicator */
+.info-message {
+    background-color: #fff3e0; /* light orange */
+    color: var(--warning);
+    border: 1px solid #ffcc80;
+}
+
+.error-message i, .success-message i, .info-message i {
+    margin-right: 8px;
+}
+
+/* --- DB Status Indicator --- */
 .db-status {
     text-align: center;
     padding: 10px;
     border-radius: 8px;
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
 }
-
 .db-status.online {
     background-color: #d4edda;
     color: #155724;
 }
-
 .db-status.offline {
     background-color: #f8d7da;
     color: #721c24;
 }
-
-/* ---------------------------------------------------------------------- */
-/* 8. Biometric/Index Screen Specific Styles                              */
-/* ---------------------------------------------------------------------- */
-.camera-permissions {
-    text-align: center;
-    padding: 30px 0;
+.db-status.connecting {
+    background-color: #fff3cd;
+    color: #856404;
 }
 
-.permission-icon {
-    background: rgba(67, 97, 238, 0.1);
-    color: var(--primary);
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2.5rem;
-    margin: 0 auto 20px;
-}
-
-.camera-container {
-    position: relative;
-    width: 100%;
-    padding-bottom: 75%; /* 4:3 aspect ratio */
-    overflow: hidden;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    background: var(--dark);
-}
-
-#videoElement {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1); /* Mirror effect for webcam */
-}
-
-.face-outline {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 60%;
-    height: 80%;
-    transform: translate(-50%, -50%);
-    border: 4px dashed var(--success);
-    border-radius: 50%;
-    pointer-events: none;
-    box-shadow: 0 0 20px rgba(76, 201, 240, 0.5);
-    animation: pulse 1.5s infinite alternate;
-}
-
-.status-indicator {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-}
-
-.camera-fallback {
-    text-align: center;
-    padding: 30px 0;
-    color: var(--danger);
-}
-
-.camera-fallback h3 {
-    margin-top: 15px;
-}
-
-/* ⚠️ Improvement: Error List Styling (for error-screen.html) */
-.error-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.error-list li {
-    font-size: 1rem;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.error-list li i {
-    color: var(--danger);
-    font-size: 1.1rem;
-}
-
-
-/* ---------------------------------------------------------------------- */
-/* 9. Dashboard/Main Menu Specific Styles                                 */
-/* ---------------------------------------------------------------------- */
+/* --- Dashboard / Menu Grid --- */
 .user-avatar {
-    width: 80px;
-    height: 80px;
-    background: var(--primary);
-    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.user-avatar i {
+    font-size: 3rem;
+    color: var(--primary);
+    padding: 20px;
     border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2.5rem;
-    margin: 0 auto 15px;
-    box-shadow: var(--shadow-sm);
+    background: var(--light);
 }
 
 .welcome-text {
-    font-size: 1.4rem;
-    font-weight: 600;
     text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--dark);
     margin-bottom: 5px;
 }
 
 .user-role {
     text-align: center;
-    font-size: var(--font-size-sm);
+    font-size: 0.9rem;
     color: var(--gray);
     margin-bottom: 30px;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.stat-card {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: var(--shadow-md);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border-left: 5px solid var(--primary);
-}
-
-.stat-icon {
-    width: 45px;
-    height: 45px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-}
-
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
-    line-height: 1;
-}
-
-.stat-label {
-    font-size: 0.8rem;
-    color: var(--gray);
 }
 
 .menu-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
+    margin-bottom: 30px;
 }
 
 .menu-item {
-    background: white;
+    background: var(--light);
     padding: 20px;
     border-radius: 12px;
     text-align: center;
     text-decoration: none;
     color: var(--dark);
-    box-shadow: var(--shadow-sm);
     transition: transform 0.2s, box-shadow 0.2s;
     border: 1px solid var(--border);
 }
 
 .menu-item:hover {
     transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .menu-item i {
-    font-size: 1.8rem;
-    color: var(--secondary);
+    font-size: 2.5rem;
+    color: var(--primary);
     margin-bottom: 10px;
 }
 
-.menu-item span {
-    display: block;
-    font-weight: 500;
-    font-size: var(--font-size-sm);
-}
-
-/* ---------------------------------------------------------------------- */
-/* 10. Activity/History List                                              */
-/* ---------------------------------------------------------------------- */
-.activity-list {
-    list-style: none;
-    padding: 0;
-}
-
-.activity-list li {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    border-left: 4px solid var(--primary);
-    box-shadow: var(--shadow-sm);
-}
-
-.activity-list li:last-child {
-    margin-bottom: 0;
-}
-
-.activity-type {
+.menu-item-title {
     font-weight: 600;
     font-size: 1rem;
+}
+
+/* --- Stats Grid --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.stat-icon {
+    font-size: 1.2rem;
+    padding: 8px;
+    border-radius: 50%;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
     color: var(--dark);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--gray);
+}
+
+/* --- Activity List (Access History) --- */
+.activity-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    padding: 15px 0;
+    border-bottom: 1px dashed var(--border);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
+    width: 30px;
+    text-align: center;
+}
+
+.activity-item.success .activity-icon i {
+    color: #28a745; /* Green */
+}
+
+.activity-item.failed .activity-icon i {
+    color: var(--danger);
+}
+
+.activity-info {
+    flex-grow: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.activity-desc {
+    font-size: 0.85rem;
+    color: var(--gray);
 }
 
 .activity-time {
     font-size: 0.8rem;
     color: var(--gray);
-    margin-bottom: 5px;
+    white-space: nowrap;
 }
 
-.activity-details {
-    font-size: 0.8rem;
-    color: var(--gray);
-}
-
-.activity-details i {
-    margin-right: 5px;
-    margin-left: 10px;
-}
-
-.activity-details i:first-child {
-    margin-left: 0;
-}
-
-.activity-status {
-    font-size: 0.75rem;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: 700;
-}
-
-.activity-status.activity-success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.activity-status.activity-failed, .activity-status.activity-denied {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-/* ---------------------------------------------------------------------- */
-/* 11. My Data Specific Styles (Tables)                                   */
-/* ---------------------------------------------------------------------- */
+/* --- Data Table (My Data) --- */
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    background: white;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -627,19 +432,45 @@ body {
 }
 
 .data-table th {
-    background-color: var(--light);
-    color: var(--primary);
-    font-weight: 600;
-    font-size: var(--font-size-sm);
+    background: var(--primary);
+    color: white;
+    font-weight: 500;
+    font-size: 0.95rem;
 }
 
-.data-table tr:last-child td {
-    border-bottom: none;
+.data-table td:last-child {
+    text-align: center;
 }
 
-/* ---------------------------------------------------------------------- */
-/* 12. Settings Specific Styles (Toggle Switch)                           */
-/* ---------------------------------------------------------------------- */
+.btn-edit, .btn-delete, .btn-action {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.btn-edit {
+    background-color: var(--warning);
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: #e68a00;
+}
+
+.btn-delete {
+    background-color: var(--danger);
+    color: white;
+    margin-left: 10px;
+}
+
+.btn-delete:hover {
+    background-color: #cc206d;
+}
+
+/* --- Settings Toggle --- */
 .setting-item {
     display: flex;
     justify-content: space-between;
@@ -654,7 +485,7 @@ body {
 
 .setting-title {
     font-weight: 600;
-    margin-bottom: 3px;
+    color: var(--dark);
 }
 
 .setting-desc {
@@ -662,118 +493,108 @@ body {
     color: var(--gray);
 }
 
-/* Toggle Switch Styling */
 .toggle-switch {
     position: relative;
+    display: inline-block;
     width: 45px;
     height: 25px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: var(--gray);
-    border-radius: 25px;
-    outline: none;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    flex-shrink: 0;
 }
 
-.toggle-switch:checked {
-    background: var(--success);
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-.toggle-switch::before {
-    content: '';
+.slider {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 21px;
-    height: 21px;
-    background: white;
-    border-radius: 50%;
-    /* ⚠️ Improvement: Add transition to the handle (::before) */
-    transition: transform 0.3s;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 25px;
 }
 
-.toggle-switch:checked::before {
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 3.5px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary);
+}
+
+input:checked + .slider:before {
     transform: translateX(20px);
 }
 
-/* ---------------------------------------------------------------------- */
-/* 13. Footer                                                             */
-/* ---------------------------------------------------------------------- */
+/* --- Footer --- */
 .footer {
-    padding: 15px 25px;
     text-align: center;
-    background: var(--dark);
-    color: rgba(255, 255, 255, 0.6);
+    padding: 20px;
     font-size: 0.8rem;
-    border-top: 1px solid #333;
+    color: var(--gray);
+    border-top: 1px solid var(--border);
 }
 
-/* ---------------------------------------------------------------------- */
-/* 14. Keyframes and Animations                                           */
-/* ---------------------------------------------------------------------- */
-@keyframes pulse {
-    0% {
-        opacity: 0.5;
-        transform: translate(-50%, -50%) scale(1);
-    }
-    100% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.05);
-    }
-}
-
-/* ---------------------------------------------------------------------- */
-/* 15. Responsive Design (Mobile Optimization)                            */
-/* ---------------------------------------------------------------------- */
-@media (max-width: 500px) {
+/* --- Media Queries for Mobile Responsiveness --- */
+@media (max-width: 600px) {
     body {
         padding: 0;
-        align-items: flex-start;
-    }
-    
-    .container {
-        max-width: 100%;
     }
 
     .app {
         border-radius: 0;
         min-height: 100vh;
-        box-shadow: none;
+        max-width: 100%;
     }
     
     .content {
-        padding: 20px 20px;
+        padding: 30px 20px;
     }
-
-    .header {
-        padding: 20px 15px 15px 15px;
-    }
-
+    
     .screen-title {
-        font-size: 1.4rem;
-        margin-bottom: 20px;
+        font-size: 1.5rem;
+        margin-bottom: 25px;
     }
     
     .menu-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 20px;
+    }
+    
+    .menu-item {
+        padding: 25px 20px;
+    }
+    
+    .header {
+        padding: 20px;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .data-table {
+        font-size: 0.9rem;
+    }
+    
+    .data-table th, .data-table td {
+        padding: 12px 15px;
     }
     
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
-    }
-
-    .data-table th, .data-table td {
-        padding: 10px;
-        font-size: 0.85rem;
-    }
-    
-    /* Responsive table hack: hide action column on small screens */
-    .data-table th:nth-child(3), .data-table td:nth-child(3) {
-        text-align: right;
-        /* display: none; */ 
     }
 }

@@ -5,9 +5,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manual Login - Secure Access System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/config.js"></script> 
+    <script>
+        // Check if config.js loaded and initialize checks
+        window.addEventListener('load', () => {
+             // Ensure AuthService is available
+            if (typeof AuthService === 'undefined') {
+                showMessage('Authentication Service is offline. Cannot register.', 'error');
+                return;
+            }
+
+            // You can add a database status check here if needed for registration
+        });
+        
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleRegistration();
+        });
+
+        async function handleRegistration() {
+            const fullName = document.getElementById('regFullName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const employeeId = document.getElementById('regEmployeeId').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const registerBtn = document.getElementById('registerBtn');
+            const processingOverlay = document.getElementById('processingOverlay');
+            
+            showMessage('', 'error'); // Clear previous messages
+            
+            if (!isValidEmail(email)) {
+                showMessage('Please enter a valid email address.', 'error');
+                return;
+            }
+            
+            if (!isStrongPassword(password)) {
+                showMessage('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match.', 'error');
+                return;
+            }
+            
+            // NOTE: Face registration logic is typically much more complex and handled by a backend service.
+            // This is a placeholder for flow control.
+            const faceData = 'SIMULATED_FACE_DATA_' + Date.now(); 
+
+            registerBtn.disabled = true;
+            processingOverlay.style.display = 'flex';
+
+            try {
+                // Ensure AuthService is available before calling
+                if (typeof AuthService.register === 'undefined') {
+                    throw new Error('Authentication Service is offline. Cannot process registration.');
+                }
+                
+                const { user, error } = await AuthService.register(fullName, email, password, employeeId, faceData);
+                
+                if (error) {
+                    throw new Error(error);
+                }
+
+                // Simulate face registration success
+                setTimeout(() => {
+                    processingOverlay.style.display = 'none';
+                    showMessage('✅ Account successfully created and face data stored! Redirecting to login...', 'success');
+                    
+                    // Log successful registration
+                    supabase
+                        .from('access_history')
+                        .insert({
+                            user_id: user.id,
+                            access_type: 'registration',
+                            status: 'success',
+                            device_info: navigator.userAgent,
+                            location: 'Web Application'
+                        })
+                        .then(() => {
+                            console.log('Registration logged to history');
+                        });
+                        
+                    setTimeout(() => {
+                        window.location.href = 'manual-login.html'; // Go to manual login after success
+                    }, 3000);
+                }, 2000);
+
+            } catch (error) {
+                console.error("Registration failed:", error);
+                processingOverlay.style.display = 'none';
+                showMessage(error.message, 'error');
+            } finally {
+                // If an early error occurs (like validation), re-enable the button
+                if (processingOverlay.style.display !== 'flex') {
+                    registerBtn.disabled = false;
+                }
+            }
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function isStrongPassword(password) {
+            // At least 8 characters, with uppercase, lowercase, number, and special character
+            const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            return strongRegex.test(password);
+        }
+
+        function showMessage(text, type = 'error') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `
+                <div class="${type === 'error' ? 'error-message' : 'success-message'}">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+                    ${text}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                if (type === 'success') {
+                    messageDiv.innerHTML = '';
+                }
+            }, 5000);
+        }
+
+        // Enter key support
+        document.getElementById('regConfirmPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleRegistration();
+            }
+        });
+    </script>
     <div class="container">
         <div class="app">
             <div class="header">
@@ -160,6 +294,140 @@
         document.getElementById('password').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 handleLogin();
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/config.js"></script>
+    <script>
+        // Check if config.js loaded and initialize checks
+        window.addEventListener('load', () => {
+             // Ensure AuthService and checkDbConnection are available
+            if (typeof AuthService === 'undefined') {
+                showMessage('Authentication Service is offline. Cannot register.', 'error');
+                return;
+            }
+
+            // You can add a database status check here if needed for registration
+        });
+        
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleRegistration();
+        });
+
+        async function handleRegistration() {
+            const fullName = document.getElementById('regFullName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const employeeId = document.getElementById('regEmployeeId').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const registerBtn = document.getElementById('registerBtn');
+            const processingOverlay = document.getElementById('processingOverlay');
+            
+            showMessage('', 'error'); // Clear previous messages
+            
+            if (!isValidEmail(email)) {
+                showMessage('Please enter a valid email address.', 'error');
+                return;
+            }
+            
+            if (!isStrongPassword(password)) {
+                showMessage('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match.', 'error');
+                return;
+            }
+            
+            // NOTE: Face registration logic is typically much more complex and handled by a backend service.
+            // This is a placeholder for flow control.
+            const faceData = 'SIMULATED_FACE_DATA_' + Date.now(); 
+
+            registerBtn.disabled = true;
+            processingOverlay.style.display = 'flex';
+
+            try {
+                // Ensure AuthService is available before calling
+                if (typeof AuthService.register === 'undefined') {
+                    throw new Error('Authentication Service is offline. Cannot process registration.');
+                }
+                
+                const { user, error } = await AuthService.register(fullName, email, password, employeeId, faceData);
+                
+                if (error) {
+                    throw new Error(error);
+                }
+
+                // Simulate face registration success (optional in final code)
+                setTimeout(() => {
+                    processingOverlay.style.display = 'none';
+                    showMessage('✅ Account successfully created and face data stored! Redirecting to login...', 'success');
+                    
+                    // Log successful registration
+                    supabase
+                        .from('access_history')
+                        .insert({
+                            user_id: user.id,
+                            access_type: 'registration',
+                            status: 'success',
+                            device_info: navigator.userAgent,
+                            location: 'Web Application'
+                        })
+                        .then(() => {
+                            console.log('Registration logged to history');
+                        });
+                        
+                    setTimeout(() => {
+                        window.location.href = 'manual-login.html'; // Go to manual login after success
+                    }, 3000);
+                }, 2000);
+
+            } catch (error) {
+                console.error("Registration failed:", error);
+                processingOverlay.style.display = 'none';
+                showMessage(error.message, 'error');
+            } finally {
+                // If an early error occurs (like validation), re-enable the button
+                if (processingOverlay.style.display !== 'flex') {
+                    registerBtn.disabled = false;
+                }
+            }
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function isStrongPassword(password) {
+            // At least 8 characters, with uppercase, lowercase, number, and special character
+            const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            return strongRegex.test(password);
+        }
+
+        function showMessage(text, type = 'error') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `
+                <div class="${type === 'error' ? 'error-message' : 'success-message'}">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+                    ${text}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                if (type === 'success') {
+                    messageDiv.innerHTML = '';
+                }
+            }, 5000);
+        }
+
+        // Enter key support
+        document.getElementById('regConfirmPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleRegistration();
             }
         });
     </script>
