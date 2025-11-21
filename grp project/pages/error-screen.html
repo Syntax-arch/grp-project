@@ -20,24 +20,32 @@
                     <i class="fas fa-exclamation-triangle" style="font-size: 5rem; color: var(--danger); margin-bottom: 20px;"></i>
                     <h2 class="screen-title" style="color: var(--danger);">Authentication Failed</h2>
                     
-                    <p id="dynamicErrorMessage" style="margin-top: 20px; font-size: 1.2rem; color: var(--dark); line-height: 1.6;">
-                        We were unable to verify your identity.
+                    <p style="margin-top: 20px; font-size: 1.2rem; color: var(--dark); line-height: 1.6;">
+                        We were unable to verify your identity. This could be due to:
                     </p>
                     
                     <div style="max-width: 400px; margin: 30px auto; text-align: left;">
                         <ul class="error-list">
-                            <li><i class="fas fa-times-circle"></i> Check your camera lighting (if using Face ID).</li>
-                            <li><i class="fas fa-times-circle"></i> Ensure your face is fully visible.</li>
-                            <li><i class="fas fa-times-circle"></i> Verify your manual login credentials.</li>
+                            <li><i class="fas fa-times-circle"></i> Low or uneven lighting</li>
+                            <li><i class="fas fa-times-circle"></i> Face not centered in the outline</li>
+                            <li><i class="fas fa-times-circle"></i> Significant change in appearance (e.g., beard, glasses)</li>
+                            <li><i class="fas fa-times-circle"></i> Connection/Server issue</li>
                         </ul>
                     </div>
                 </div>
-                
-                <div class="options-bottom" style="display: flex; justify-content: center; gap: 20px;">
-                    <a href="../index.html" class="btn btn-primary" id="tryAgainBtn">
+
+                <div class="options">
+                    <a href="../index.html" class="btn btn-primary btn-block">
                         <i class="fas fa-redo"></i> Try Face Recognition Again
                     </a>
-                    <a href="support.html" class="btn btn-secondary">
+                </div>
+                <div class="options" style="margin-top: 15px;">
+                    <a href="manual-login.html" class="btn btn-secondary btn-block">
+                        <i class="fas fa-key"></i> Use Manual Login
+                    </a>
+                </div>
+                <div class="options" style="margin-top: 15px;">
+                    <a href="support.html" class="btn btn-danger btn-block">
                         <i class="fas fa-bug"></i> Report Issue
                     </a>
                 </div>
@@ -46,12 +54,9 @@
                     <div class="card-title" style="color: #856404;">
                         <i class="fas fa-lightbulb"></i> Tips for Better Recognition
                     </div>
-                    <ul style="color: #856404; padding-left: 20px; text-align: left;">
-                        <li>Ensure good, even lighting on your face</li>
-                        <li>Remove sunglasses, hats, or face coverings</li>
-                        <li>Look directly at the camera</li>
-                        <li>Keep your face within the outline</li>
-                        <li>Make sure your entire face is visible</li>
+                    <ul class="error-list" style="color: #856404; padding-left: 0; text-align: center;">
+                        <li><i class="fas fa-check-circle"></i> Ensure good, even lighting</li>
+                        <li><i class="fas fa-check-circle"></i> Remove face coverings</li>
                     </ul>
                 </div>
             </div>
@@ -62,8 +67,6 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/utils.js"></script>
     <script type="module" src="../assets/js/error-screen.js"></script>
 </body>

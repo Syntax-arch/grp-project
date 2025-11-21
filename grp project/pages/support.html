@@ -33,48 +33,48 @@
                                 <option value="login">Login Issue</option>
                                 <option value="password">Password Reset</option>
                                 <option value="account">Account Management</option>
-                                <option value="other">Other</option>
+                                <option value="other">Other/General Inquiry</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="urgency">Urgency</label>
                             <select class="form-control" id="urgency" required>
-                                <option value="low">Low</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="high">High</option>
+                                <option value="low">Low - General Question</option>
+                                <option value="medium" selected>Medium - Minor Bug/Issue</option>
+                                <option value="high">High - Cannot Access System</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
                             <label for="issueDescription">Description</label>
-                            <textarea class="form-control" id="issueDescription" rows="5" placeholder="Please describe your issue in detail" required></textarea>
+                            <textarea class="form-control" id="issueDescription" rows="5" placeholder="Please describe your issue in detail (browser, device, steps to reproduce)" required></textarea>
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary btn-block" id="submitTicketBtn">
+
+                        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
                             <i class="fas fa-paper-plane"></i> Submit Support Ticket
                         </button>
                     </form>
                 </div>
-
-                <div class="card" style="margin-top: 30px; text-align: center;">
-                    <div class="card-title">Need Immediate Help?</div>
-                    <p>Call our support line:</p>
-                    <a href="tel:+1234567890" style="font-size: 1.5rem; color: var(--primary); text-decoration: none;">
-                        <i class="fas fa-phone"></i> +1 (234) 567-890
-                    </a>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">
+                        <i class="fas fa-phone"></i> Contact Information
+                    </div>
+                    <p><strong>Email:</strong> <a href="mailto:support@secureaccess.com">support@secureaccess.com</a></p>
+                    <p><strong>Phone:</strong> +1 (800) 555-0199 (Mon-Fri, 9am-5pm)</p>
                 </div>
             </div>
             
             <div class="footer">
-                <p>Secure Access System v2.1 &copy; 2023</p>
+                <p>Secure Access System v2.1 &copy; 2023 | All rights reserved</p>
             </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/support.js"></script>
 </body>
 </html>

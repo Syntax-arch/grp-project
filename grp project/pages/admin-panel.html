@@ -22,38 +22,77 @@
                 <h2 class="screen-title">Admin Dashboard</h2>
                 
                 <div id="message"></div>
-                <div id="adminContent">
-                    <div class="stats-grid">
-                        </div>
-
-                    <h3 class="section-title">Administrative Actions</h3>
-                    <div class="menu-grid">
-                        <a href="#" class="menu-item" id="manageUsersButton">
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(67, 97, 238, 0.1); color: var(--primary);">
                             <i class="fas fa-users"></i>
-                            <span>User Management</span>
-                        </a>
-                        <a href="#" class="menu-item" id="viewLogsButton">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>System Logs</span>
-                        </a>
                         </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="totalUsers">0</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(247, 37, 133, 0.1); color: var(--danger);">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="blockedUsers">0</div>
+                            <div class="stat-label">Blocked Accounts</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(76, 201, 240, 0.1); color: var(--success);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="dailyLogins">0</div>
+                            <div class="stat-label">Daily Logins</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(248, 150, 30, 0.1); color: var(--warning);">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="failedScans">0</div>
+                            <div class="stat-label">Failed Biometric Scans</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="accessDenied" style="text-align: center; padding: 50px; display: none;">
-                    <i class="fas fa-ban" style="font-size: 3rem; color: var(--danger); margin-bottom: 20px;"></i>
-                    <p style="font-size: 1.2rem;">Access Denied. You must be an administrator to view this page.</p>
+                <div class="section-title">Administration Tasks</div>
+                <div class="menu-grid">
+                    <a href="#" class="menu-item" onclick="manageUsers()">
+                        <i class="fas fa-user-shield"></i>
+                        <span>User Management</span>
+                    </a>
+                    <a href="#" class="menu-item" onclick="viewSystemLogs()">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>System Logs</span>
+                    </a>
+                    <a href="#" class="menu-item" onclick="accessReports()">
+                        <i class="fas fa-chart-area"></i>
+                        <span>Access Reports</span>
+                    </a>
+                    <a href="#" class="menu-item" onclick="securitySettings()">
+                        <i class="fas fa-fingerprint"></i>
+                        <span>Security Settings</span>
+                    </a>
                 </div>
+
             </div>
             
             <div class="footer">
-                <p>Secure Access System v2.1 &copy; 2023</p>
+                <p>Secure Access System v2.1 &copy; 2023 | All rights reserved</p>
             </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/admin-panel.js"></script>
 </body>
 </html>

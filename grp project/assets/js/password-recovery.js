@@ -1,59 +1,58 @@
 // assets/js/password-recovery.js
 
-import { AuthService } from './authService.js';
+import { supabase } from './config.js';
 import { Utils } from './utils.js';
 
 let recoveryEmail = '';
+let verificationCode = '';
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Attach handlers
-    document.getElementById('verifyEmailBtn').addEventListener('click', verifyEmail);
-    document.getElementById('verifyCodeBtn').addEventListener('click', verifyCode);
-    document.getElementById('resetPasswordBtn').addEventListener('click', resetPassword);
-    
-    // Attach Enter key support
-    document.getElementById('recoveryEmail').addEventListener('keypress', (e) => { if (e.key === 'Enter') verifyEmail(); });
-    // ... attach keypress for code and password fields
-});
-
-async function verifyEmail() {
+window.verifyEmail = async () => {
     const email = document.getElementById('recoveryEmail').value.trim();
-    if (!Utils.isValidEmail(email)) {
-        Utils.showMessage('Please enter a valid email address.', 'error');
+    if (!email) {
+        Utils.showMessage('Please enter your email.', 'error');
         return;
     }
     
-    // In a real app, use Supabase's password recovery method:
-    // const { error } = await supabase.auth.resetPasswordForEmail(email);
-
-    // MOCKING the Supabase call and flow:
-    Utils.showMessage('Verification code sent to your email (mocked).', 'success');
-    recoveryEmail = email;
+    // In a real app, this would trigger an email from your server/Supabase Auth
+    // Since we're using custom logic, we'll simulate it.
     
-    // Advance to next step
+    // Check if user exists first
+    const { data: user } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+    if (!user) {
+        Utils.showMessage('Email not found. Please try again.', 'error');
+        return;
+    }
+
+    // SIMULATION: Generate and store a code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    recoveryEmail = email;
+    verificationCode = code;
+    console.log(`[SIMULATION] Recovery Code for ${email}: ${code}`);
+    
+    // UI Update
+    Utils.showMessage(`Verification code sent to ${email} (Check console for simulation).`, 'success');
     document.getElementById('emailStep').style.display = 'none';
     document.getElementById('codeStep').style.display = 'block';
-}
+};
 
-function verifyCode() {
-    const code = document.getElementById('verificationCode').value.trim();
-    if (code.length < 6) {
-        Utils.showMessage('Please enter the full verification code.', 'error');
-        return;
+window.verifyCode = () => {
+    const enteredCode = document.getElementById('verificationCode').value.trim();
+
+    if (enteredCode === verificationCode) {
+        Utils.showMessage('Code verified successfully!', 'success');
+        document.getElementById('codeStep').style.display = 'none';
+        document.getElementById('passwordStep').style.display = 'block';
+    } else {
+        Utils.showMessage('Invalid verification code.', 'error');
     }
-    
-    // In a real app, this would verify the code against Supabase/server:
-    // const { user, error } = await supabase.auth.verifyOTP({ email: recoveryEmail, token: code, type: 'recovery' });
+};
 
-    // MOCKING success:
-    Utils.showMessage('Code verified successfully (mocked). Please set your new password.', 'success');
-    
-    // Advance to next step
-    document.getElementById('codeStep').style.display = 'none';
-    document.getElementById('passwordStep').style.display = 'block';
-}
-
-function resetPassword() {
+window.resetPassword = async () => {
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
@@ -62,18 +61,31 @@ function resetPassword() {
         return;
     }
 
-    if (!Utils.isStrongPassword(newPassword)) {
-        Utils.showMessage('Password is not strong enough.', 'error');
+    if (newPassword.length < 8) {
+        Utils.showMessage('Password must be at least 8 characters.', 'error');
         return;
     }
-    
-    // In a real app, use Supabase method to update password:
-    // const { error } = await supabase.auth.updateUser({ password: newPassword });
 
-    // MOCKING success:
-    Utils.showMessage('Password reset successfully! Redirecting to login...', 'success');
-    
-    setTimeout(() => {
-        window.location.href = 'manual-login.html';
-    }, 2000);
-}
+    try {
+        // Update password in the 'users' table
+        const { error } = await supabase
+            .from('users')
+            .update({ password_hash: newPassword })
+            .eq('email', recoveryEmail);
+
+        if (error) throw error;
+
+        Utils.showMessage('Password reset successfully! Redirecting to login...', 'success');
+        
+        // Cleanup and redirect
+        verificationCode = '';
+        recoveryEmail = '';
+        setTimeout(() => {
+            window.location.href = 'manual-login.html';
+        }, 2000);
+
+    } catch (error) {
+        console.error('Password reset error:', error);
+        Utils.showMessage('Failed to reset password. Please try again.', 'error');
+    }
+};

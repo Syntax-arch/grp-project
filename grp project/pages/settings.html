@@ -33,61 +33,63 @@
                             <div class="setting-title">Face Data Management</div>
                             <div class="setting-desc">Update or re-register your facial recognition data</div>
                         </div>
-                        <button class="btn btn-primary" id="registerFaceBtn">
-                            Register Face
+                        <button class="btn btn-primary" onclick="registerFace()">
+                            <i class="fas fa-camera-retro"></i> Re-Register
                         </button>
                     </div>
-                </div>
 
-                <div class="card" style="margin-top: 20px;">
-                    <div class="card-title">
-                        <i class="fas fa-shield-alt"></i> Security & Alerts
-                    </div>
-                    
-                    <div class="setting-item switch-item">
+                    <div class="setting-item">
                         <div class="setting-info">
-                            <div class="setting-title">Two-Factor Authentication (2FA)</div>
-                            <div class="setting-desc">Adds a second layer of security (Recommended)</div>
+                            <div class="setting-title">Biometric Lock</div>
+                            <div class="setting-desc">Require face scan after 10 minutes of inactivity</div>
+                        </div>
+                        <input type="checkbox" id="biometricLock" class="toggle-switch" checked>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-shield-alt"></i> Security
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Two-Factor Authentication</div>
+                            <div class="setting-desc">Enable an extra layer of security on login</div>
                         </div>
                         <input type="checkbox" id="twoFactor" class="toggle-switch">
                     </div>
-                    
-                    <div class="setting-item switch-item">
+
+                    <div class="setting-item">
                         <div class="setting-info">
-                            <div class="setting-title">Alert on Login</div>
-                            <div class="setting-desc">Receive an email every time your account is accessed</div>
+                            <div class="setting-title">Login Alerts</div>
+                            <div class="setting-desc">Receive an email alert for every successful login</div>
                         </div>
                         <input type="checkbox" id="loginAlerts" class="toggle-switch" checked>
                     </div>
-
-                    <div class="setting-item switch-item">
-                        <div class="setting-info">
-                            <div class="setting-title">Alert on Failed Attempts</div>
-                            <div class="setting-desc">Receive an email after 3 failed login attempts</div>
-                        </div>
-                        <input type="checkbox" id="failedAttemptAlerts" class="toggle-switch" checked>
-                    </div>
                 </div>
 
-                <div class="options-bottom" style="margin-top: 30px; display: flex; justify-content: space-between;">
-                    <button class="btn btn-success" id="saveSettingsBtn">
+                <div class="options" style="margin-top: 20px;">
+                    <button class="btn btn-primary btn-block" onclick="saveSettings()">
                         <i class="fas fa-save"></i> Save Settings
                     </button>
-                    <button class="btn btn-danger" id="resetSettingsBtn">
+                </div>
+                
+                <div class="options">
+                    <button class="btn btn-secondary btn-block" onclick="resetSettings()">
                         <i class="fas fa-undo"></i> Reset to Default
                     </button>
                 </div>
             </div>
             
             <div class="footer">
-                <p>Secure Access System v2.1 &copy; 2023</p>
+                <p>Secure Access System v2.1 &copy; 2023 | All rights reserved</p>
             </div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/settings.js"></script>
 </body>
 </html>

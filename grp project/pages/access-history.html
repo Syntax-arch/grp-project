@@ -31,42 +31,44 @@
                         <select id="filterType" class="form-control" style="flex: 1; min-width: 150px;">
                             <option value="all">All Access Types</option>
                             <option value="manual_login">Manual Login</option>
-                            <option value="face_recognition">Face Recognition</option>
-                            <option value="nfc_tag">NFC Tag</option>
+                            <option value="biometric_login">Biometric Login</option>
                         </select>
                         <select id="filterStatus" class="form-control" style="flex: 1; min-width: 150px;">
                             <option value="all">All Statuses</option>
                             <option value="success">Success</option>
                             <option value="failed">Failed</option>
-                            <option value="denied">Denied</option>
                         </select>
-                        <button class="btn btn-secondary" id="applyFiltersBtn">
-                            <i class="fas fa-search"></i> Apply
-                        </button>
-                        <button class="btn btn-secondary" id="exportHistoryBtn">
-                            <i class="fas fa-download"></i> Export
+                        <button class="btn btn-secondary" onclick="loadHistory()">
+                            <i class="fas fa-sync-alt"></i> Apply
                         </button>
                     </div>
                 </div>
-                
-                <div class="history-list-container">
-                    <ul id="historyList" class="activity-list">
-                        </ul>
-                    <div id="loadingIndicator" style="text-align: center; padding: 20px;">
-                        <i class="fas fa-spinner fa-spin"></i> Loading History...
+
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-list"></i> Activity Log
                     </div>
+                    <div id="historyList" class="activity-list">
+                        <div style="text-align: center; padding: 20px; color: var(--gray);">Loading history...</div>
+                    </div>
+                </div>
+
+                <div class="options">
+                    <button class="btn btn-success btn-block" onclick="exportHistory()">
+                        <i class="fas fa-file-export"></i> Export Report
+                    </button>
                 </div>
             </div>
             
             <div class="footer">
-                <p>Secure Access System v2.1 &copy; 2023</p>
+                <p>Secure Access System v2.1 &copy; 2023 | All rights reserved</p>
             </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/access-history.js"></script>
 </body>
 </html>

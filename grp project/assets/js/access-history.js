@@ -2,82 +2,70 @@
 
 import { AuthService } from './authService.js';
 import { Utils } from './utils.js';
+import { supabase } from './config.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const user = await AuthService.getCurrentUser();
-    if (!user) {
-        AuthService.logout(); // Redirect if not authenticated
-        return;
-    }
-
-    document.getElementById('applyFiltersBtn').addEventListener('click', () => loadAccessHistory(user.id));
-    document.getElementById('exportHistoryBtn').addEventListener('click', () => Utils.showMessage('Export feature coming soon!', 'success'));
-    
-    // Initial load
-    loadAccessHistory(user.id);
+document.addEventListener('DOMContentLoaded', () => {
+    AuthService.checkSession();
+    loadHistory();
+    // Attach event listeners for filter changes
+    document.getElementById('filterType').addEventListener('change', loadHistory);
+    document.getElementById('filterStatus').addEventListener('change', loadHistory);
 });
 
-async function loadAccessHistory(userId) {
+async function loadHistory() {
+    const user = AuthService.getCurrentUser();
     const historyList = document.getElementById('historyList');
-    const loadingIndicator = document.getElementById('loadingIndicator');
+    
+    if (!user) {
+        historyList.innerHTML = '<div style="text-align: center; padding: 20px;">User not found.</div>';
+        return;
+    }
+    
+    historyList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--gray);"><i class="fas fa-spinner fa-spin"></i> Loading history...</div>';
+
     const filterType = document.getElementById('filterType').value;
     const filterStatus = document.getElementById('filterStatus').value;
 
-    loadingIndicator.style.display = 'block';
-    historyList.innerHTML = '';
-    
+    let query = supabase
+        .from('access_history')
+        .select('created_at, status, access_type, device_info, message')
+        .eq('user_id', user.id);
+        
+    if (filterType !== 'all') {
+        query = query.eq('access_type', filterType);
+    }
+    if (filterStatus !== 'all') {
+        query = query.eq('status', filterStatus);
+    }
+
     try {
-        let query = supabase
-            .from('access_history')
-            .select('timestamp, access_type, status, device_info, location')
-            .eq('user_id', userId)
-            .order('timestamp', { ascending: false });
-
-        if (filterType !== 'all') {
-            query = query.eq('access_type', filterType);
-        }
-        if (filterStatus !== 'all') {
-            query = query.eq('status', filterStatus);
-        }
-
-        const { data: history, error } = await query;
+        const { data: history, error } = await query.order('created_at', { ascending: false });
 
         if (error) throw error;
-        
-        if (history.length === 0) {
-            historyList.innerHTML = '<li style="text-align: center; color: var(--gray);">No history found with these filters.</li>';
-            return;
-        }
 
-        const historyHtml = history.map(item => `
-            <li>
-                <div class="activity-type">
-                    ${item.access_type.replace(/_/g, ' ').toUpperCase()}
-                    <span class="activity-status activity-${item.status}">${item.status.toUpperCase()}</span>
+        const historyHtml = history.map(h => `
+            <div class="activity-item ${h.status}">
+                <div class="activity-icon">
+                    <i class="fas fa-${h.status === 'success' ? 'check' : 'times'}-circle"></i>
                 </div>
-                <div class="activity-time">${Utils.formatDate(item.timestamp)}</div>
-                <div class="activity-details">
-                    <i class="fas fa-map-marker-alt"></i> ${item.location || 'Unknown Location'}
-                    <i class="fas fa-desktop"></i> ${getDeviceInfo(item.device_info)}
+                <div class="activity-info">
+                    <div class="activity-title">${h.access_type.replace('_', ' ').toUpperCase()} - ${h.status.toUpperCase()}</div>
+                    <div class="activity-desc">${Utils.getIconForDevice(h.device_info)} - ${h.message || 'N/A'}</div>
                 </div>
-            </li>
+                <div class="activity-time">${Utils.formatDate(h.created_at)}</div>
+            </div>
         `).join('');
 
-        historyList.innerHTML = historyHtml;
+        historyList.innerHTML = historyHtml || '<div style="text-align: center; padding: 20px; color: var(--gray);">No history found with these filters.</div>';
 
     } catch (error) {
-        Utils.showMessage('Failed to load history: ' + error.message, 'error');
-    } finally {
-        loadingIndicator.style.display = 'none';
+        console.error('Error loading history:', error);
+        Utils.showMessage('Failed to load history. Please check console.', 'error');
+        historyList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger);">Error loading history.</div>';
     }
 }
 
-function getDeviceInfo(deviceInfo) {
-    // Logic extracted from admin-panel/main-menu
-    if (!deviceInfo) return 'Unknown Device';
-    if (deviceInfo.includes('Mobile') || deviceInfo.includes('Android') || deviceInfo.includes('iPhone')) {
-        return '📱 Mobile';
-    } else {
-        return '💻 Desktop';
-    }
-}
+window.loadHistory = loadHistory; // Expose to global scope for button onclick
+window.exportHistory = () => { 
+    Utils.showMessage('Export feature coming soon!', 'success', 'message');
+};

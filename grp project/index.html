@@ -34,26 +34,30 @@
                 <div class="camera-container" id="cameraContainer" style="display: none;">
                     <video id="videoElement" autoplay playsinline></video>
                     <div class="face-outline"></div>
-                    <div class="status-indicator" id="statusIndicator">Scanning...</div>
-                    <canvas id="faceCanvas" style="display: none;"></canvas>
+                    <div class="status-indicator" id="statusIndicator">Ready to scan...</div>
                 </div>
-                
-                <div class="options">
-                    <a href="pages/manual-login.html" class="btn btn-primary">
+
+                <div class="options" style="margin-top: 20px;">
+                    <a href="pages/manual-login.html" class="btn btn-secondary btn-block">
                         <i class="fas fa-key"></i> Use Manual Login
+                    </a>
+                </div>
+
+                <div class="options" style="margin-top: 15px;">
+                    <a href="pages/registration.html" class="btn btn-success btn-block">
+                        <i class="fas fa-user-plus"></i> Register New Account
                     </a>
                 </div>
             </div>
             
             <div class="footer">
-                <p>Secure Access System v2.1 &copy; 2023</p>
+                <p>Secure Access System v2.1 &copy; 2023 | All rights reserved</p>
             </div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module" src="assets/js/authService.js"></script>
     <script type="module" src="assets/js/utils.js"></script>
+    <script type="module" src="assets/js/authService.js"></script>
     <script type="module" src="assets/js/index.js"></script>
 </body>
 </html>

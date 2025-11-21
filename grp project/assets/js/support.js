@@ -1,31 +1,26 @@
 // assets/js/support.js
 
-import { AuthService } from './authService.js';
+import { supabase } from './config.js';
 import { Utils } from './utils.js';
+import { AuthService } from './authService.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const user = await AuthService.getCurrentUser();
-    if (!user) {
-        AuthService.logout(); // Ensure session exists before submission
-        return;
-    }
-
-    const supportForm = document.getElementById('supportForm');
-    if (supportForm) {
-        supportForm.addEventListener('submit', (e) => submitTicket(e, user));
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    // Check session to pre-fill user info if possible
+    AuthService.checkSession(false);
+    document.getElementById('supportForm').addEventListener('submit', handleSubmitTicket);
 });
 
-async function submitTicket(e, user) {
+async function handleSubmitTicket(e) {
     e.preventDefault();
     
+    const user = AuthService.getCurrentUser();
     const issueType = document.getElementById('issueType').value;
-    const issueDescription = document.getElementById('issueDescription').value.trim();
     const urgency = document.getElementById('urgency').value;
-    const submitBtn = document.getElementById('submitTicketBtn');
+    const description = document.getElementById('issueDescription').value.trim();
+    const submitBtn = document.getElementById('submitBtn');
 
-    if (!issueType || !issueDescription) {
-        Utils.showMessage('Please select an issue type and provide a description.', 'error');
+    if (!issueType || !description) {
+        Utils.showMessage('Please fill in the issue type and description.', 'error');
         return;
     }
 
@@ -33,28 +28,24 @@ async function submitTicket(e, user) {
     submitBtn.disabled = true;
 
     try {
-        // This assumes you have a 'support_tickets' table in Supabase
         const { error } = await supabase
             .from('support_tickets')
-            .insert({
-                user_id: user.id,
-                user_email: user.email,
+            .insert([{
+                user_id: user ? user.id : null,
                 issue_type: issueType,
-                description: issueDescription,
                 urgency: urgency,
-                status: 'open'
-            })
-            .select()
-            .single();
+                description: description,
+                status: 'open',
+                device_info: navigator.userAgent
+            }])
+            .select();
 
         if (error) throw error;
 
         Utils.showMessage('Support ticket submitted successfully! We will contact you within 24 hours.', 'success');
         
         // Clear form
-        document.getElementById('issueType').value = '';
-        document.getElementById('issueDescription').value = '';
-        document.getElementById('urgency').value = 'medium';
+        document.getElementById('supportForm').reset();
 
     } catch (error) {
         console.error('Error submitting ticket:', error);

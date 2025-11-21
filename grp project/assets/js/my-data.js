@@ -2,71 +2,75 @@
 
 import { AuthService } from './authService.js';
 import { Utils } from './utils.js';
+import { supabase } from './config.js';
 
-let currentUser = null;
+let currentUser;
 
-document.addEventListener('DOMContentLoaded', async () => {
-    currentUser = await AuthService.getCurrentUser();
-    if (!currentUser) {
-        AuthService.logout();
+document.addEventListener('DOMContentLoaded', () => {
+    AuthService.checkSession();
+    loadUserData();
+});
+
+async function loadUserData() {
+    currentUser = AuthService.getCurrentUser();
+    if (!currentUser) return;
+
+    document.getElementById('fullName').textContent = currentUser.full_name;
+    document.getElementById('email').textContent = currentUser.email;
+    document.getElementById('role').textContent = currentUser.is_admin ? 'Administrator' : 'Standard User';
+}
+
+window.editField = (field) => {
+    const element = document.getElementById(field);
+    const currentValue = element.textContent;
+    const label = field.replace(/([A-Z])/g, ' $1').toLowerCase();
+    
+    const newValue = prompt(`Enter new ${label}:`, currentValue);
+    
+    if (newValue !== null && newValue.trim() !== '' && newValue.trim() !== currentValue) {
+        element.textContent = newValue.trim();
+        Utils.showMessage('Changes made locally. Click "Save Changes" to update.', 'warning', 'message');
+    }
+};
+
+window.saveChanges = async () => {
+    const updatedData = {
+        full_name: document.getElementById('fullName').textContent,
+        email: document.getElementById('email').textContent
+        // You'd handle password change separately
+    };
+    
+    // Check if anything actually changed
+    if (updatedData.full_name === currentUser.full_name && updatedData.email === currentUser.email) {
+        Utils.showMessage('No changes detected to save.', 'info', 'message');
         return;
     }
 
-    loadUserData(currentUser);
-    
-    // Attach event listeners
-    document.getElementById('saveChangesBtn').addEventListener('click', saveChanges);
-    document.getElementById('deleteAccountBtn').addEventListener('click', deleteAccount);
-    
-    // Attach listeners to all 'Edit' buttons
-    document.querySelectorAll('.btn-secondary.btn-sm').forEach(button => {
-        button.addEventListener('click', (e) => editField(e.target.dataset.field));
-    });
-});
+    try {
+        const { error } = await supabase
+            .from('users')
+            .update(updatedData)
+            .eq('id', currentUser.id);
 
-async function loadUserData(user) {
-    document.getElementById('fullName').textContent = user.user_metadata?.full_name || 'N/A';
-    document.getElementById('emailAddress').textContent = user.email || 'N/A';
-    document.getElementById('memberSince').textContent = Utils.formatDate(user.created_at);
-
-    // Fetch last access history to get last login time (Mocked for now)
-    document.getElementById('lastLogin').textContent = 'Just Now (Mock)';
-}
-
-function editField(field) {
-    const targetElement = document.getElementById(field);
-    const currentValue = targetElement.textContent;
-    
-    let newValue = prompt(`Enter new ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}:`, currentValue);
-    
-    if (newValue !== null && newValue.trim() !== '') {
-        // Simple client-side update
-        targetElement.textContent = newValue.trim();
-        Utils.showMessage('Changes made locally. Click "Save Changes" to confirm.', 'success');
+        if (error) throw error;
         
-        // In a real app: update the global currentUser object and prepare for Supabase update
+        // Update local session
+        currentUser = {...currentUser, ...updatedData};
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        Utils.showMessage('Profile updated successfully!', 'success', 'message');
+    } catch (error) {
+        console.error('Save error:', error);
+        Utils.showMessage('Failed to save profile changes.', 'error', 'message');
     }
-}
+};
 
-async function saveChanges() {
-    // Collect updated data (e.g., from the elements)
-    const newFullName = document.getElementById('fullName').textContent;
-    const newEmail = document.getElementById('emailAddress').textContent;
-    
-    // In a real app, use the secure Supabase update method:
-    // const { data, error } = await supabase.auth.updateUser({ email: newEmail, data: { full_name: newFullName } });
-
-    Utils.showMessage('Profile updated successfully!', 'success');
-}
-
-function deleteAccount() {
-    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-        if (confirm('This will permanently remove all your data. Are you absolutely sure?')) {
-            // In a real app, you would call a secure function/endpoint to handle deletion
-            // await supabase.rpc('delete_user_account'); // Example custom function
-            
-            Utils.showMessage('Account deletion requested. Admin approval needed.', 'error');
-            AuthService.logout(); // Log out the user immediately
-        }
+window.deleteAccount = () => {
+    if (confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.')) {
+        // In a real application, this would call a secure function to delete the user in Supabase
+        Utils.showMessage('Account deletion initiated. Contacting administrator...', 'danger', 'message');
+        setTimeout(() => {
+            AuthService.logout(); // Redirect the user immediately
+        }, 3000);
     }
-}
+};

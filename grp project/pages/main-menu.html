@@ -12,7 +12,7 @@
         <div class="app">
             <div class="header">
                 <a href="#" class="back-button" id="logoutButton">
-                    <i class="fas fa-arrow-left"></i>
+                    <i class="fas fa-sign-out-alt"></i>
                 </a>
                 <h1>Dashboard</h1>
                 <p>Secure Access System</p>
@@ -23,61 +23,71 @@
                     <i class="fas fa-user"></i>
                 </div>
                 
-                <div id="userWelcome" class="welcome-text">Loading...</div>
-                <div id="userRole" class="user-role">Please wait</div>
+                <div id="userWelcome" class="welcome-text">Welcome Back!</div>
+                <div id="userRole" class="user-role">Loading Role...</div>
 
+                <div class="section-title">Quick Stats</div>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(67, 97, 238, 0.1); color: #4361ee;">
-                            <i class="fas fa-lock-open"></i>
+                        <div class="stat-icon" style="background: rgba(67, 97, 238, 0.1); color: var(--primary);">
+                            <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-number" id="successfulLogins">0</div>
-                            <div class="stat-label">Successful Logins</div>
+                            <div class="stat-number" id="lastLoginTime">--</div>
+                            <div class="stat-label">Last Login</div>
                         </div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(247, 37, 133, 0.1); color: var(--danger);">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="failedAttempts">0</div>
+                            <div class="stat-label">Failed Attempts (24h)</div>
+                        </div>
                     </div>
+                </div>
 
-                <h3 class="section-title">System Access</h3>
+                <div class="section-title">Menu</div>
                 <div class="menu-grid">
-                    <a href="my-data.html" class="menu-item">
-                        <i class="fas fa-id-card"></i>
-                        <span>My Data</span>
-                    </a>
                     <a href="access-history.html" class="menu-item">
                         <i class="fas fa-history"></i>
                         <span>Access History</span>
                     </a>
+                    <a href="my-data.html" class="menu-item">
+                        <i class="fas fa-id-badge"></i>
+                        <span>My Data</span>
+                    </a>
                     <a href="settings.html" class="menu-item">
-                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-cogs"></i>
                         <span>Settings</span>
                     </a>
                     <a href="support.html" class="menu-item">
                         <i class="fas fa-headset"></i>
                         <span>Support</span>
                     </a>
-                    <a href="admin-panel.html" class="menu-item admin-only" id="adminPanelLink" style="display: none;">
-                        <i class="fas fa-user-shield"></i>
+                    <a href="admin-panel.html" class="menu-item" id="adminPanelLink" style="display: none;">
+                        <i class="fas fa-shield-alt"></i>
                         <span>Admin Panel</span>
                     </a>
                 </div>
 
-                <h3 class="section-title">Recent Activity</h3>
-                <div class="card" style="padding: 15px;">
-                    <ul id="recentActivity" class="activity-list">
-                        </ul>
+                <div class="section-title">Recent Activity</div>
+                <div id="recentActivity" class="activity-list">
+                    <div style="text-align: center; padding: 20px; color: var(--gray);">Loading recent activity...</div>
                 </div>
+
             </div>
             
             <div class="footer">
-                <p>Secure Access System v2.1 &copy; 2023</p>
+                <p>Secure Access System v2.1 &copy; 2023 | All rights reserved</p>
             </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
     <script type="module" src="../assets/js/main-menu.js"></script>
 </body>
 </html>

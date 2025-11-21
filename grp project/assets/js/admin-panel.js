@@ -2,53 +2,68 @@
 
 import { AuthService } from './authService.js';
 import { Utils } from './utils.js';
+import { supabase } from './config.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const isAdmin = await AuthService.isAdmin();
-    
-    if (!isAdmin) {
-        document.getElementById('adminContent').style.display = 'none';
-        document.getElementById('accessDenied').style.display = 'block';
-        
-        // Log access attempt failure
-        const user = await AuthService.getCurrentUser();
-        if (user) {
-            await supabase.from('access_history').insert({
-                user_id: user.id, 
-                access_type: 'admin_panel', 
-                status: 'denied', 
-                reason: 'non-admin access attempt'
-            });
-        }
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Enforce Authentication AND Admin role
+    if (!AuthService.isAdmin() || !AuthService.getCurrentUser()) {
+        alert('Access Denied: Administrator privileges required.');
+        window.location.href = 'main-menu.html';
         return;
     }
-
-    // Load dynamic data for admins
+    
     loadAdminStats();
-
-    // Attach event listeners for admin actions (mocked actions)
-    document.getElementById('manageUsersButton').addEventListener('click', () => manageUsers());
-    document.getElementById('viewLogsButton').addEventListener('click', () => viewSystemLogs());
-    // ... attach other listeners
 });
 
 async function loadAdminStats() {
-    // Mocking real data retrieval for a professional-looking dashboard
-    document.getElementById('totalUsers').textContent = '147';
-    document.getElementById('activeSessions').textContent = '12';
-    document.getElementById('last24hLogins').textContent = '58';
-    
-    // In a real app, use Supabase queries for counts:
-    /*
-    const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact' });
-    document.getElementById('totalUsers').textContent = totalUsers;
-    */
+    try {
+        // Fetch Total Users
+        const { count: totalUsers, error: usersError } = await supabase
+            .from('users')
+            .select('*', { count: 'exact', head: true });
+        
+        if (usersError) throw usersError;
+        document.getElementById('totalUsers').textContent = totalUsers;
+
+        // Fetch Blocked/Inactive Users (Simulated by is_active = false)
+        const { count: blockedUsers, error: blockedError } = await supabase
+            .from('users')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_active', false);
+        
+        if (blockedError) throw blockedError;
+        document.getElementById('blockedUsers').textContent = blockedUsers;
+
+        // Fetch Daily Logins (Simplified: Logins in the last 24h)
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const { count: dailyLogins, error: loginsError } = await supabase
+            .from('access_history')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'success')
+            .gte('created_at', twentyFourHoursAgo);
+            
+        if (loginsError) throw loginsError;
+        document.getElementById('dailyLogins').textContent = dailyLogins;
+        
+        // Fetch Failed Biometric Scans (Simulated by access_type = biometric_login and status = failed)
+        const { count: failedScans, error: scansError } = await supabase
+            .from('access_history')
+            .select('*', { count: 'exact', head: true })
+            .eq('access_type', 'biometric_login')
+            .eq('status', 'failed');
+
+        if (scansError) throw scansError;
+        document.getElementById('failedScans').textContent = failedScans;
+
+
+    } catch (error) {
+        console.error('Error loading admin stats:', error);
+        Utils.showMessage('Failed to load admin dashboard data.', 'error', 'message');
+    }
 }
 
-function manageUsers() {
-    Utils.showMessage('User Management panel would open here', 'success');
-}
-
-function viewSystemLogs() {
-    Utils.showMessage('System Logs panel would open here', 'success');
-}
+// Global functions exposed for the HTML onclick handlers
+window.manageUsers = () => Utils.showMessage('Loading User Management interface...', 'success', 'message');
+window.viewSystemLogs = () => Utils.showMessage('Fetching system-wide access logs...', 'success', 'message');
+window.accessReports = () => Utils.showMessage('Generating security access reports...', 'success', 'message');
+window.securitySettings = () => Utils.showMessage('Applying global security policy settings...', 'success', 'message');

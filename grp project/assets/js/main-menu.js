@@ -2,74 +2,83 @@
 
 import { AuthService } from './authService.js';
 import { Utils } from './utils.js';
+import { supabase } from './config.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const user = await AuthService.getCurrentUser();
-
-    if (!user) {
-        // If no user session, force logout/redirect
-        AuthService.logout();
-        return;
-    }
-
-    // Set welcome and role text
-    const fullName = user.user_metadata?.full_name || 'User';
-    document.getElementById('userWelcome').textContent = `Welcome back, ${fullName}!`;
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Enforce Authentication
+    AuthService.checkSession();
     
-    // Check and display Admin link
-    if (await AuthService.isAdmin()) {
-        document.getElementById('userRole').textContent = 'Administrator';
-        document.getElementById('adminPanelLink').style.display = 'block';
-    } else {
-        document.getElementById('userRole').textContent = 'Standard User';
-    }
+    // 2. Load User Data
+    loadDashboardData();
 
-    // Logout button handler
-    document.getElementById('logoutButton').addEventListener('click', (e) => {
-        e.preventDefault();
-        if (confirm('Are you sure you want to log out?')) {
-            AuthService.logout();
-        }
-    });
-
-    // Load dynamic data
-    loadUserStats(user.id);
-    loadRecentActivity(user.id);
+    // 3. Attach Logout Handler
+    document.getElementById('logoutButton').addEventListener('click', handleLogout);
 });
 
-async function loadUserStats(userId) {
-    // Mock for now, replace with real Supabase query
-    document.getElementById('successfulLogins').textContent = '25';
-    // In a real app:
-    // const { count, error } = await supabase.from('access_history').select('*', { count: 'exact' }).eq('user_id', userId).eq('status', 'success');
-}
+async function loadDashboardData() {
+    const user = AuthService.getCurrentUser();
+    if (!user) return;
 
-async function loadRecentActivity(userId) {
+    // Display welcome info
+    document.getElementById('userWelcome').textContent = `Welcome Back, ${user.full_name.split(' ')[0]}!`;
+    document.getElementById('userRole').textContent = user.is_admin ? 'Role: Administrator' : 'Role: Standard User';
+
+    // Show Admin Panel link if admin
+    if (AuthService.isAdmin()) {
+        document.getElementById('adminPanelLink').style.display = 'block';
+    }
+
     try {
-        // Fetch last 5 access attempts from Supabase
-        const { data: activity, error } = await supabase
+        // Fetch recent access history and stats
+        const { data: history, error } = await supabase
             .from('access_history')
-            .select('*')
-            .eq('user_id', userId)
-            .order('timestamp', { ascending: false })
+            .select('created_at, status, access_type, device_info')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
             .limit(5);
 
         if (error) throw error;
+
+        // 1. Update Stats
+        const lastSuccessLogin = history.find(h => h.status === 'success');
+        document.getElementById('lastLoginTime').textContent = lastSuccessLogin 
+            ? Utils.formatDate(lastSuccessLogin.created_at) 
+            : 'N/A';
         
-        const activityHtml = activity.map(item => `
-            <li>
-                <div class="activity-type">${item.access_type.replace('_', ' ')}</div>
-                <div class="activity-time">${Utils.formatDate(item.timestamp)}</div>
-                <div class="activity-status activity-${item.status}">${item.status.toUpperCase()}</div>
-            </li>
+        const oneDayAgo = new Date();
+        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+        const failedAttempts24h = history.filter(h => 
+            h.status === 'failed' && new Date(h.created_at) > oneDayAgo
+        ).length;
+        document.getElementById('failedAttempts').textContent = failedAttempts24h;
+
+        // 2. Load Recent Activity List
+        const activityHtml = history.map(h => `
+            <div class="activity-item ${h.status}">
+                <div class="activity-icon">
+                    <i class="fas fa-${h.status === 'success' ? 'check' : 'times'}-circle"></i>
+                </div>
+                <div class="activity-info">
+                    <div class="activity-title">${h.access_type.replace('_', ' ').toUpperCase()}</div>
+                    <div class="activity-desc">${h.status.toUpperCase()} from ${Utils.getIconForDevice(h.device_info)}</div>
+                </div>
+                <div class="activity-time">${Utils.formatDate(h.created_at)}</div>
+            </div>
         `).join('');
 
         document.getElementById('recentActivity').innerHTML = activityHtml || 
-            '<div style="text-align: center; padding: 20px; color: var(--gray);">No recent activity found</div>';
+            '<div style="text-align: center; padding: 20px; color: var(--gray);">No recent activity found.</div>';
 
     } catch (error) {
-        console.error('Error loading recent activity:', error);
+        console.error('Error loading dashboard data:', error);
         document.getElementById('recentActivity').innerHTML = 
-            '<div style="text-align: center; padding: 20px; color: var(--danger);">Error loading activity</div>';
+            '<div style="text-align: center; padding: 20px; color: var(--danger);">Error loading activity.</div>';
+    }
+}
+
+function handleLogout() {
+    if (confirm('Are you sure you want to log out?')) {
+        AuthService.logout();
     }
 }
