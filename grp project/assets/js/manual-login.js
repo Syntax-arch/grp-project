@@ -3,9 +3,8 @@ import { AuthService, supabase, checkDbConnection } from './authService.js';
 import { showMessage } from './utils.js';
 
 window.addEventListener('load', async () => {
-    console.log('manual-login.js loaded. Checking DB status...');
     
-    // 1. Check DB Status
+    // 1. Check DB Status - This is the check that was failing!
     const statusDiv = document.getElementById('dbStatus');
     if (statusDiv) {
         statusDiv.style.display = 'block';
@@ -16,26 +15,21 @@ window.addEventListener('load', async () => {
             statusDiv.textContent = 'Database Online';
             statusDiv.className = 'db-status online';
         } else {
-            statusDiv.textContent = 'Database Offline. Functionality limited.';
+            statusDiv.textContent = 'Database Offline. Check keys and RLS Policy.';
             statusDiv.className = 'db-status offline';
         }
     }
 
-    // 2. Attach Event Listeners
+    // 2. Attach Event Listener to the form
     const loginForm = document.getElementById('loginForm');
     
-    // Check if the form element was found. THIS IS CRITICAL.
     if (loginForm) {
-        console.log('Form ID (loginForm) found. Attaching submit listener.');
-        
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevents page reload
-            console.log('Login Form Submit Event Fired.'); // LOGGING FOR DEBUG
             handleLogin();
         });
     } else {
-        console.error('CRITICAL ERROR: loginForm ID not found in HTML. Button will do nothing!');
-        showMessage('System Error: Login form not found. Check HTML IDs.', 'error', 'loginMessages');
+        showMessage('System Error: Login form ID missing.', 'error', 'loginMessages');
     }
 
     // Allow form submission with Enter key on password field
@@ -47,7 +41,6 @@ window.addEventListener('load', async () => {
 });
 
 async function handleLogin() {
-    console.log('handleLogin function started.'); // LOGGING FOR DEBUG
     
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
@@ -57,18 +50,14 @@ async function handleLogin() {
 
     if (!email || !password) {
         showMessage('Please enter both email and password.', 'error', msgContainer);
-        console.log('Validation failed: Missing email or password.');
         return;
     }
 
-    // These lines should immediately update the button. If they don't, something is wrong with the IDs or the showMessage function.
     loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
     loginBtn.disabled = true;
-    showMessage('', 'error', msgContainer); 
+    showMessage('', 'error', msgContainer); // Clear old messages
 
     try {
-        console.log(`Attempting login for: ${email}`);
-        
         const { user, error } = await AuthService.login(email, password);
 
         if (error) {
@@ -89,7 +78,7 @@ async function handleLogin() {
             });
 
         setTimeout(() => {
-            // Assumes main-menu.html is in the parent directory of pages/
+            // Redirect to the main menu page
             window.location.href = '../main-menu.html'; 
         }, 1500);
 

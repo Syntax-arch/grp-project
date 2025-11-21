@@ -1,7 +1,7 @@
 // assets/js/utils.js
 
-export function showMessage(text, type = 'error', messageContainerId = 'message') {
-    const messagesDiv = document.getElementById(messageContainerId);
+export function showMessage(text, type = 'error', containerId = 'loginMessages') {
+    const messagesDiv = document.getElementById(containerId);
     if (!messagesDiv) return;
 
     messagesDiv.innerHTML = `
@@ -17,11 +17,8 @@ export function showMessage(text, type = 'error', messageContainerId = 'message'
 }
 
 export function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^s@]+@[^s@]+.[^s@]+$/;
     return emailRegex.test(email);
 }
 
-export function isStrongPassword(password) {
-    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return strongRegex.test(password);
-}
+// Add other utility functions here if needed
