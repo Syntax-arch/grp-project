@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Data - Secure Access System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app">
+            <div class="header">
+                <a href="main-menu.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1>My Data Management</h1>
+                <p>Manage your personal information</p>
+            </div>
+            
+            <div class="content">
+                <h2 class="screen-title">My Data Management</h2>
+                
+                <div id="message"></div>
+                
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-user"></i> Personal Information
+                    </div>
+                    
+                    <table class="data-table">
+                        <tr>
+                            <th>Field</th>
+                            <th>Value</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr>
+                            <td>Full Name</td>
+                            <td id="fullName">Loading...</td>
+                            <td><button class="btn btn-secondary btn-sm" data-field="fullName"><i class="fas fa-edit"></i> Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>Email Address</td>
+                            <td id="emailAddress">Loading...</td>
+                            <td><button class="btn btn-secondary btn-sm" data-field="emailAddress"><i class="fas fa-edit"></i> Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>Last Login</td>
+                            <td id="lastLogin">N/A</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Member Since</td>
+                            <td id="memberSince">N/A</td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="options-bottom" style="margin-top: 30px; display: flex; justify-content: space-between;">
+                    <button class="btn btn-success" id="saveChangesBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button class="btn btn-danger" id="deleteAccountBtn">
+                        <i class="fas fa-trash-alt"></i> Delete Account
+                    </button>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Secure Access System v2.1 &copy; 2023</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
+    <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/my-data.js"></script>
+</body>
+</html>

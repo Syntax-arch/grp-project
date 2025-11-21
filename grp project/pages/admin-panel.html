@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Secure Access System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app">
+            <div class="header">
+                <a href="main-menu.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1>Admin Panel</h1>
+                <p>System Administration</p>
+            </div>
+            
+            <div class="content">
+                <h2 class="screen-title">Admin Dashboard</h2>
+                
+                <div id="message"></div>
+                <div id="adminContent">
+                    <div class="stats-grid">
+                        </div>
+
+                    <h3 class="section-title">Administrative Actions</h3>
+                    <div class="menu-grid">
+                        <a href="#" class="menu-item" id="manageUsersButton">
+                            <i class="fas fa-users"></i>
+                            <span>User Management</span>
+                        </a>
+                        <a href="#" class="menu-item" id="viewLogsButton">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>System Logs</span>
+                        </a>
+                        </div>
+                </div>
+
+                <div id="accessDenied" style="text-align: center; padding: 50px; display: none;">
+                    <i class="fas fa-ban" style="font-size: 3rem; color: var(--danger); margin-bottom: 20px;"></i>
+                    <p style="font-size: 1.2rem;">Access Denied. You must be an administrator to view this page.</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Secure Access System v2.1 &copy; 2023</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
+    <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/admin-panel.js"></script>
+</body>
+</html>

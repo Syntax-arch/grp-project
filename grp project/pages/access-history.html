@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access History - Secure Access System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app">
+            <div class="header">
+                <a href="main-menu.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1>Access History</h1>
+                <p>Review your login activities</p>
+            </div>
+            
+            <div class="content">
+                <h2 class="screen-title">Access History</h2>
+                
+                <div id="message"></div>
+                
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-filter"></i> Filter Options
+                    </div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <select id="filterType" class="form-control" style="flex: 1; min-width: 150px;">
+                            <option value="all">All Access Types</option>
+                            <option value="manual_login">Manual Login</option>
+                            <option value="face_recognition">Face Recognition</option>
+                            <option value="nfc_tag">NFC Tag</option>
+                        </select>
+                        <select id="filterStatus" class="form-control" style="flex: 1; min-width: 150px;">
+                            <option value="all">All Statuses</option>
+                            <option value="success">Success</option>
+                            <option value="failed">Failed</option>
+                            <option value="denied">Denied</option>
+                        </select>
+                        <button class="btn btn-secondary" id="applyFiltersBtn">
+                            <i class="fas fa-search"></i> Apply
+                        </button>
+                        <button class="btn btn-secondary" id="exportHistoryBtn">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="history-list-container">
+                    <ul id="historyList" class="activity-list">
+                        </ul>
+                    <div id="loadingIndicator" style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading History...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Secure Access System v2.1 &copy; 2023</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
+    <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/access-history.js"></script>
+</body>
+</html>

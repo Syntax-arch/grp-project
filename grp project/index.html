@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Secure Access System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app">
+            <div class="header">
+                <h1>Secure Access System</h1>
+                <p>Biometric Authentication & Access Control</p>
+            </div>
+            
+            <div class="content">
+                <h2 class="screen-title">Login</h2>
+                
+                <div id="loginMessages"></div>
+                
+                <div class="camera-permissions" id="cameraPermissions">
+                    <div class="permission-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>Camera Access Required</h3>
+                    <p>To use face recognition, please allow camera access when prompted.</p>
+                    <button class="btn btn-primary" id="enableCameraButton">
+                        <i class="fas fa-camera"></i> Enable Camera
+                    </button>
+                </div>
+                
+                <div class="camera-container" id="cameraContainer" style="display: none;">
+                    <video id="videoElement" autoplay playsinline></video>
+                    <div class="face-outline"></div>
+                    <div class="status-indicator" id="statusIndicator">Scanning...</div>
+                    <canvas id="faceCanvas" style="display: none;"></canvas>
+                </div>
+                
+                <div class="options">
+                    <a href="pages/manual-login.html" class="btn btn-primary">
+                        <i class="fas fa-key"></i> Use Manual Login
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Secure Access System v2.1 &copy; 2023</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module" src="assets/js/authService.js"></script>
+    <script type="module" src="assets/js/utils.js"></script>
+    <script type="module" src="assets/js/index.js"></script>
+</body>
+</html>

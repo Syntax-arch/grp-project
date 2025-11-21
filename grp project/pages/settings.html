@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Secure Access System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="app">
+            <div class="header">
+                <a href="main-menu.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1>Settings</h1>
+                <p>Configure your preferences</p>
+            </div>
+            
+            <div class="content">
+                <h2 class="screen-title">Settings</h2>
+                
+                <div id="message"></div>
+                
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-id-badge"></i> Face Recognition
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Face Data Management</div>
+                            <div class="setting-desc">Update or re-register your facial recognition data</div>
+                        </div>
+                        <button class="btn btn-primary" id="registerFaceBtn">
+                            Register Face
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">
+                        <i class="fas fa-shield-alt"></i> Security & Alerts
+                    </div>
+                    
+                    <div class="setting-item switch-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Two-Factor Authentication (2FA)</div>
+                            <div class="setting-desc">Adds a second layer of security (Recommended)</div>
+                        </div>
+                        <input type="checkbox" id="twoFactor" class="toggle-switch">
+                    </div>
+                    
+                    <div class="setting-item switch-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Alert on Login</div>
+                            <div class="setting-desc">Receive an email every time your account is accessed</div>
+                        </div>
+                        <input type="checkbox" id="loginAlerts" class="toggle-switch" checked>
+                    </div>
+
+                    <div class="setting-item switch-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Alert on Failed Attempts</div>
+                            <div class="setting-desc">Receive an email after 3 failed login attempts</div>
+                        </div>
+                        <input type="checkbox" id="failedAttemptAlerts" class="toggle-switch" checked>
+                    </div>
+                </div>
+
+                <div class="options-bottom" style="margin-top: 30px; display: flex; justify-content: space-between;">
+                    <button class="btn btn-success" id="saveSettingsBtn">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                    <button class="btn btn-danger" id="resetSettingsBtn">
+                        <i class="fas fa-undo"></i> Reset to Default
+                    </button>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Secure Access System v2.1 &copy; 2023</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script type="module" src="../assets/js/authService.js"></script>
+    <script type="module" src="../assets/js/utils.js"></script>
+    <script type="module" src="../assets/js/settings.js"></script>
+</body>
+</html>
