@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Secure Access System</title>
+    <title>Main Menu - Secure Access System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
@@ -11,72 +13,49 @@
     <div class="container">
         <div class="app">
             <div class="header">
-                <a href="#" class="back-button" id="logoutButton">
-                    <i class="fas fa-sign-out-alt"></i>
-                </a>
-                <h1>Dashboard</h1>
-                <p>Secure Access System</p>
+                <h1>Secure Access System</h1>
+                <p>Welcome, <span id="userNameDisplay">User</span>!</p>
             </div>
             
             <div class="content">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
+                <h2 class="screen-title">Main Menu</h2>
                 
-                <div id="userWelcome" class="welcome-text">Welcome Back!</div>
-                <div id="userRole" class="user-role">Loading Role...</div>
+                <!-- Display status messages -->
+                <div id="statusMessage" class="status-message"></div>
 
-                <div class="section-title">Quick Stats</div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(67, 97, 238, 0.1); color: var(--primary);">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-number" id="lastLoginTime">--</div>
-                            <div class="stat-label">Last Login</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(247, 37, 133, 0.1); color: var(--danger);">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-number" id="failedAttempts">0</div>
-                            <div class="stat-label">Failed Attempts (24h)</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-title">Menu</div>
-                <div class="menu-grid">
-                    <a href="access-history.html" class="menu-item">
-                        <i class="fas fa-history"></i>
-                        <span>Access History</span>
+                <div class="card menu-grid">
+                    
+                    <!-- 1. Admin Panel Link (Only visible to admins) -->
+                    <a href="admin-panel.html" class="menu-item admin-only" id="adminPanelLink" style="display: none;">
+                        <i class="fas fa-user-shield fa-2x"></i>
+                        <p>Admin Panel</p>
                     </a>
+
+                    <!-- 2. My Data Link -->
                     <a href="my-data.html" class="menu-item">
-                        <i class="fas fa-id-badge"></i>
-                        <span>My Data</span>
+                        <i class="fas fa-database fa-2x"></i>
+                        <p>My Data</p>
                     </a>
-                    <a href="settings.html" class="menu-item">
-                        <i class="fas fa-cogs"></i>
-                        <span>Settings</span>
+
+                    <!-- 3. Access History Link -->
+                    <a href="access-history.html" class="menu-item">
+                        <i class="fas fa-history fa-2x"></i>
+                        <p>Access History</p>
                     </a>
+
+                    <!-- 4. Support Link -->
                     <a href="support.html" class="menu-item">
-                        <i class="fas fa-headset"></i>
-                        <span>Support</span>
-                    </a>
-                    <a href="admin-panel.html" class="menu-item" id="adminPanelLink" style="display: none;">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Admin Panel</span>
+                        <i class="fas fa-life-ring fa-2x"></i>
+                        <p>Support & Help</p>
                     </a>
                 </div>
 
-                <div class="section-title">Recent Activity</div>
-                <div id="recentActivity" class="activity-list">
-                    <div style="text-align: center; padding: 20px; color: var(--gray);">Loading recent activity...</div>
+                <div class="options" style="margin-top: 20px;">
+                    <!-- Logout Button -->
+                    <button id="logoutBtn" class="btn btn-danger btn-block">
+                        <i class="fas fa-sign-out-alt"></i> Log Out
+                    </button>
                 </div>
-
             </div>
             
             <div class="footer">
@@ -85,9 +64,10 @@
         </div>
     </div>
 
+    <!-- External and App Scripts -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script type="module" src="../assets/js/utils.js"></script>
     <script type="module" src="../assets/js/authService.js"></script>
+    <script type="module" src="../assets/js/utils.js"></script>
     <script type="module" src="../assets/js/main-menu.js"></script>
 </body>
 </html>

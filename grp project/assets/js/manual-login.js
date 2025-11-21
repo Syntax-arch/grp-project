@@ -42,6 +42,13 @@ window.addEventListener('load', async () => {
 });
 
 async function handleLogin() {
+    // Before (The path your server was struggling to resolve):
+// window.location.href = 'main-menu.html';
+
+// Now (The dynamic path that guarantees success):
+const currentPath = window.location.pathname;
+const newPath = currentPath.replace('manual-login.html', 'main-menu.html');
+window.location.pathname = newPath;
     
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
