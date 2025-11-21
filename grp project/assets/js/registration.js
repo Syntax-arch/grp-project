@@ -1,85 +1,80 @@
 // assets/js/registration.js
-import { AuthService, supabase } from './authService.js';
+import { AuthService, supabase, checkDbConnection } from './authService.js';
 import { showMessage, isValidEmail, isStrongPassword } from './utils.js';
 
-window.addEventListener('load', () => {
-    // Attach Event Listener to the form ID
-    document.getElementById('registrationForm')?.addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevents page reload
-        handleRegistration();
-    });
-
-    // Enter key support
-    document.getElementById('regConfirmPassword')?.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            handleRegistration();
+window.addEventListener('load', async () => {
+    // Optional: Check DB Status on Registration Page too
+    const statusDiv = document.getElementById('dbStatus');
+    if (statusDiv) {
+        if (await checkDbConnection()) {
+            statusDiv.textContent = 'Database Online';
+            statusDiv.className = 'db-status online';
+        } else {
+            statusDiv.textContent = 'Database Offline. Check RLS Policy.';
+            statusDiv.className = 'db-status offline';
         }
-    });
+    }
+
+    const registrationForm = document.getElementById('registrationForm');
+    if (registrationForm) {
+        registrationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleRegistration();
+        });
+    }
 });
 
 async function handleRegistration() {
-    const fullName = document.getElementById('regFullName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const employeeId = document.getElementById('regEmployeeId').value.trim();
-    const password = document.getElementById('regPassword').value;
-    const confirmPassword = document.getElementById('regConfirmPassword').value;
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const employeeId = document.getElementById('employeeId').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const confirmPassword = document.getElementById('confirmPassword').value.trim();
     const registerBtn = document.getElementById('registerBtn');
-    const processingOverlay = document.getElementById('processingOverlay');
-    
-    const msgContainer = 'message';
+    const msgContainer = 'registrationMessages';
 
-    showMessage('', 'error', msgContainer);
-    
+    // 1. Basic validation
+    if (!fullName || !email || !password || !confirmPassword) {
+        showMessage('All required fields must be filled.', 'error', msgContainer);
+        return;
+    }
     if (!isValidEmail(email)) {
         showMessage('Please enter a valid email address.', 'error', msgContainer);
         return;
     }
-    
-    if (!isStrongPassword(password)) {
-        showMessage('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.', 'error', msgContainer);
-        return;
-    }
-    
     if (password !== confirmPassword) {
-        showMessage('Passwords do not match.', 'error', msgContainer);
+        showMessage('Password and confirmation password do not match.', 'error', msgContainer);
         return;
     }
-    
-    const faceData = 'SIMULATED_FACE_DATA_' + Date.now(); 
+    // Simple password strength check (if you included it in utils.js)
+    // if (!isStrongPassword(password)) {
+    //     showMessage('Password must be at least 8 chars and include upper/lower/number/symbol.', 'error', msgContainer);
+    //     return;
+    // }
 
+    registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
     registerBtn.disabled = true;
-    processingOverlay.style.display = 'flex';
+    showMessage('', 'error', msgContainer); // Clear old messages
 
     try {
-        const { user, error } = await AuthService.register(fullName, email, password, employeeId, faceData);
-        
+        const { user, error } = await AuthService.register(fullName, email, password, employeeId || null);
+
         if (error) {
             throw new Error(error);
         }
 
-        setTimeout(async () => {
-            processingOverlay.style.display = 'none';
-            showMessage('✅ Account successfully created! Redirecting to login...', 'success', msgContainer);
-            
-            await supabase
-                .from('access_history')
-                .insert({
-                    user_id: user.id,
-                    access_type: 'registration',
-                    status: 'success',
-                    device_info: navigator.userAgent,
-                    location: 'Registration Page'
-                });
-                
-            setTimeout(() => {
-                // Stays in the same directory (pages/)
-                window.location.href = 'manual-login.html'; 
-            }, 3000);
+        showMessage('Registration successful! Redirecting to login...', 'success', msgContainer);
+        
+        setTimeout(() => {
+            // Redirect to the manual login page
+            window.location.href = 'manual-login.html'; 
         }, 2000);
 
     } catch (error) {
-        processingOverlay.style.display = 'none';
+        console.error("Registration failed:", error);
         showMessage(error.message || 'Registration failed. Please try again.', 'error', msgContainer);
+    } finally {
+        registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register Account';
         registerBtn.disabled = false;
     }
 }
