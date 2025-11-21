@@ -1,81 +1,112 @@
 // assets/js/manual-login.js
+import { AuthService, supabase, checkDbConnection } from './authService.js';
+import { showMessage } from './utils.js';
 
-import { AuthService } from './authService.js';
-import { Utils } from './utils.js';
-import { supabase } from './config.js';
-
-document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Initial Authentication Check
-    if (AuthService.getCurrentUser()) {
-        window.location.href = 'main-menu.html'; 
-        return; 
-    }
+window.addEventListener('load', async () => {
+    console.log('manual-login.js loaded. Checking DB status...');
     
-    // 2. Database Status Check (Optional but good practice)
-    await checkDatabaseConnection();
+    // 1. Check DB Status
+    const statusDiv = document.getElementById('dbStatus');
+    if (statusDiv) {
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = '<i class="fas fa-network-wired fa-spin"></i> Checking System Status...';
+        statusDiv.className = 'db-status connecting';
 
-    // 3. Attach Form Handler
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        if (await checkDbConnection()) {
+            statusDiv.textContent = 'Database Online';
+            statusDiv.className = 'db-status online';
+        } else {
+            statusDiv.textContent = 'Database Offline. Functionality limited.';
+            statusDiv.className = 'db-status offline';
+        }
+    }
+
+    // 2. Attach Event Listeners
+    const loginForm = document.getElementById('loginForm');
+    
+    // Check if the form element was found. THIS IS CRITICAL.
+    if (loginForm) {
+        console.log('Form ID (loginForm) found. Attaching submit listener.');
+        
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevents page reload
+            console.log('Login Form Submit Event Fired.'); // LOGGING FOR DEBUG
+            handleLogin();
+        });
+    } else {
+        console.error('CRITICAL ERROR: loginForm ID not found in HTML. Button will do nothing!');
+        showMessage('System Error: Login form not found. Check HTML IDs.', 'error', 'loginMessages');
+    }
+
+    // Allow form submission with Enter key on password field
+    document.getElementById('password')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    });
 });
 
-async function checkDatabaseConnection() {
-    const dbStatus = document.getElementById('dbStatus');
-    
-    dbStatus.classList.remove('online', 'offline');
-    dbStatus.classList.add('connecting');
-    dbStatus.innerHTML = '<i class="fas fa-network-wired fa-spin"></i> Checking System Status...';
-    dbStatus.style.display = 'block';
-    
-    try {
-        // Use a simple Supabase query check
-        const { error } = await supabase
-            .from('users')
-            .select('id', { head: true, count: 'exact' }); 
-
-        if (error) throw error;
-
-        dbStatus.classList.remove('connecting');
-        dbStatus.classList.add('online');
-        dbStatus.innerHTML = '✅ System Ready (Database Online)';
-        
-        setTimeout(() => {
-            dbStatus.style.display = 'none';
-        }, 3000);
-        
-    } catch (err) {
-        dbStatus.classList.remove('connecting');
-        dbStatus.classList.add('offline');
-        dbStatus.innerHTML = '⚠️ Database Connection Error. Cannot Log In.';
-        Utils.showMessage('The secure system database is currently unreachable.', 'error', 'loginMessages');
-    }
-}
-
-async function handleLogin(e) {
-    e.preventDefault(); 
+async function handleLogin() {
+    console.log('handleLogin function started.'); // LOGGING FOR DEBUG
     
     const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
+    const password = document.getElementById('password').value.trim();
     const loginBtn = document.getElementById('loginBtn');
     
+    const msgContainer = 'loginMessages';
+
     if (!email || !password) {
-        Utils.showMessage('Please fill in all fields', 'error', 'loginMessages');
+        showMessage('Please enter both email and password.', 'error', msgContainer);
+        console.log('Validation failed: Missing email or password.');
         return;
     }
 
+    // These lines should immediately update the button. If they don't, something is wrong with the IDs or the showMessage function.
     loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
     loginBtn.disabled = true;
+    showMessage('', 'error', msgContainer); 
 
     try {
-        await AuthService.login(email, password);
+        console.log(`Attempting login for: ${email}`);
         
-        Utils.showMessage('Login successful! Redirecting...', 'success', 'loginMessages');
+        const { user, error } = await AuthService.login(email, password);
+
+        if (error) {
+            throw new Error(error);
+        }
+
+        showMessage('Login successful! Redirecting...', 'success', msgContainer);
+        
+        // Log successful attempt
+        await supabase
+            .from('access_history')
+            .insert({
+                user_id: user.id,
+                access_type: 'manual_login',
+                status: 'success',
+                device_info: navigator.userAgent,
+                location: 'Manual Login Page'
+            });
 
         setTimeout(() => {
-            window.location.href = 'main-menu.html';
-        }, 1000);
+            // Assumes main-menu.html is in the parent directory of pages/
+            window.location.href = '../main-menu.html'; 
+        }, 1500);
 
     } catch (error) {
-        Utils.showMessage(error.message, 'error', 'loginMessages');
+        console.error("Login failed:", error);
+        showMessage(error.message || 'Login failed. Check credentials.', 'error', msgContainer);
+        
+        // Log failed attempt
+        await supabase
+            .from('access_history')
+            .insert({
+                user_id: null,
+                access_type: 'manual_login',
+                status: 'failed',
+                device_info: navigator.userAgent,
+                location: 'Manual Login Page'
+            });
     } finally {
         loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
         loginBtn.disabled = false;

@@ -1,67 +1,85 @@
 // assets/js/registration.js
+import { AuthService, supabase } from './authService.js';
+import { showMessage, isValidEmail, isStrongPassword } from './utils.js';
 
-import { supabase } from './config.js';
-import { Utils } from './utils.js';
+window.addEventListener('load', () => {
+    // Attach Event Listener to the form ID
+    document.getElementById('registrationForm')?.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevents page reload
+        handleRegistration();
+    });
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('registrationForm').addEventListener('submit', handleRegistration);
+    // Enter key support
+    document.getElementById('regConfirmPassword')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            handleRegistration();
+        }
+    });
 });
 
-async function handleRegistration(e) {
-    e.preventDefault();
-    
+async function handleRegistration() {
     const fullName = document.getElementById('regFullName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
+    const employeeId = document.getElementById('regEmployeeId').value.trim();
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
     const registerBtn = document.getElementById('registerBtn');
+    const processingOverlay = document.getElementById('processingOverlay');
+    
+    const msgContainer = 'message';
 
+    showMessage('', 'error', msgContainer);
+    
+    if (!isValidEmail(email)) {
+        showMessage('Please enter a valid email address.', 'error', msgContainer);
+        return;
+    }
+    
+    if (!isStrongPassword(password)) {
+        showMessage('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.', 'error', msgContainer);
+        return;
+    }
+    
     if (password !== confirmPassword) {
-        Utils.showMessage('Passwords do not match!', 'error');
+        showMessage('Passwords do not match.', 'error', msgContainer);
         return;
     }
+    
+    const faceData = 'SIMULATED_FACE_DATA_' + Date.now(); 
 
-    if (password.length < 8) {
-        Utils.showMessage('Password must be at least 8 characters long.', 'error');
-        return;
-    }
-
-    registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
     registerBtn.disabled = true;
+    processingOverlay.style.display = 'flex';
 
     try {
-        // 1. Insert new user into the 'users' table
-        const { error } = await supabase
-            .from('users')
-            .insert({ 
-                full_name: fullName, 
-                email: email, 
-                // NOTE: Use a proper hashing function in a real app, 
-                // but this matches the AuthService demo logic.
-                password_hash: password, 
-                is_admin: false,
-                is_active: true
-            });
-
+        const { user, error } = await AuthService.register(fullName, email, password, employeeId, faceData);
+        
         if (error) {
-            console.error('Registration Error:', error);
-            if (error.code === '23505') { // Unique constraint violation (e.g., email already exists)
-                 throw new Error('This email is already registered.');
-            }
-            throw new Error('Registration failed due to a database error.');
+            throw new Error(error);
         }
 
-        Utils.showMessage('Account created successfully! Redirecting to login...', 'success');
-        
-        // Redirect to manual login page
-        setTimeout(() => {
-            window.location.href = 'manual-login.html';
+        setTimeout(async () => {
+            processingOverlay.style.display = 'none';
+            showMessage('✅ Account successfully created! Redirecting to login...', 'success', msgContainer);
+            
+            await supabase
+                .from('access_history')
+                .insert({
+                    user_id: user.id,
+                    access_type: 'registration',
+                    status: 'success',
+                    device_info: navigator.userAgent,
+                    location: 'Registration Page'
+                });
+                
+            setTimeout(() => {
+                // Stays in the same directory (pages/)
+                window.location.href = 'manual-login.html'; 
+            }, 3000);
         }, 2000);
 
     } catch (error) {
-        Utils.showMessage(error.message, 'error');
-    } finally {
-        registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register Account';
+        processingOverlay.style.display = 'none';
+        showMessage(error.message || 'Registration failed. Please try again.', 'error', msgContainer);
         registerBtn.disabled = false;
     }
 }
